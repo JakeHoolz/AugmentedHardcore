@@ -8,8 +8,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.potion.PotionData;
-import org.bukkit.potion.PotionType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.List;
 
@@ -19,11 +19,10 @@ public class InventoryUtils {
         ItemMeta im = item.getItemMeta();
         if (im != null) {
             im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            im.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
             im.setDisplayName(displayName);
             im.setLore(lore);
             if (glowing) {
-                im.addEnchant(Enchantment.ARROW_INFINITE, 0, true);
+                im.addEnchant(Enchantment.INFINITY, 1, true);
                 im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             }
             item.setItemMeta(im);
@@ -45,13 +44,12 @@ public class InventoryUtils {
 
     public static ItemStack createPotion(String displayName, List<String> lore) {
         ItemStack item = new ItemStack(Material.POTION);
-        PotionMeta sm = (PotionMeta) item.getItemMeta();
-        if (sm != null) {
-            sm.setBasePotionData(new PotionData(PotionType.SPEED));
-            sm.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
-            sm.setDisplayName(displayName);
-            sm.setLore(lore);
-            item.setItemMeta(sm);
+        PotionMeta pm = (PotionMeta) item.getItemMeta();
+        if (pm != null) {
+            pm.addCustomEffect(new PotionEffect(PotionEffectType.SPEED, 3600, 1), true);
+            pm.setDisplayName(displayName);
+            pm.setLore(lore);
+            item.setItemMeta(pm);
         }
         return item;
     }

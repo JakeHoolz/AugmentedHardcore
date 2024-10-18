@@ -1,9 +1,9 @@
 package com.backtobedrock.augmentedhardcore.eventListeners.dependencies;
 
-import com.SirBlobman.combatlogx.api.event.PlayerPunishEvent;
-import com.SirBlobman.combatlogx.api.event.PlayerReTagEvent;
-import com.SirBlobman.combatlogx.api.event.PlayerTagEvent;
-import com.SirBlobman.combatlogx.api.event.PlayerUntagEvent;
+import com.github.sirblobman.combatlogx.api.event.PlayerPunishEvent;
+import com.github.sirblobman.combatlogx.api.event.PlayerReTagEvent;
+import com.github.sirblobman.combatlogx.api.event.PlayerTagEvent;
+import com.github.sirblobman.combatlogx.api.event.PlayerUntagEvent;
 import com.backtobedrock.augmentedhardcore.domain.Killer;
 import com.backtobedrock.augmentedhardcore.eventListeners.AbstractEventListener;
 import org.bukkit.Bukkit;
