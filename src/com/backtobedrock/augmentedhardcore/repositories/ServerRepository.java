@@ -26,10 +26,15 @@ public class ServerRepository {
     public ServerRepository() {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
         this.initializeMapper();
-        this.getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> this.plugin.getLogger().log(Level.INFO, String.format("Loaded %d ongoing death %s.", serverData.getTotalOngoingBans(), serverData.getTotalOngoingBans() != 1 ? "bans" : "ban"))).exceptionally(e -> {
-            e.printStackTrace();
-            return null;
-        });
+        this.getServerData(this.plugin.getServer())
+                .thenAcceptAsync(serverData -> this.plugin.getLogger().log(Level.INFO,
+                        String.format("Loaded %d ongoing death %s.",
+                                serverData.getTotalOngoingBans(),
+                                serverData.getTotalOngoingBans() != 1 ? "bans" : "ban")),
+                        this.plugin.getExecutorService()).exceptionally(e -> {
+                    e.printStackTrace();
+                    return null;
+                });
     }
 
     private void initializeMapper() {
@@ -43,9 +48,10 @@ public class ServerRepository {
 
     public CompletableFuture<ServerData> getServerData(Server server) {
         if (this.serverData == null) {
-            return this.mapper.getServerData(server).thenApplyAsync(this::getFromDataAndCache);
+            return this.mapper.getServerData(server)
+                    .thenApplyAsync(this::getFromDataAndCache, this.plugin.getExecutorService());
         } else {
-            return CompletableFuture.supplyAsync(this::getFromCache);
+            return CompletableFuture.supplyAsync(this::getFromCache, this.plugin.getExecutorService());
         }
     }
 

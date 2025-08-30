@@ -26,7 +26,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
 
     @Override
     public void insertPlayerDataAsync(PlayerData playerData) {
-        CompletableFuture.runAsync(() -> this.updatePlayerData(playerData)).exceptionally(ex -> {
+        CompletableFuture.runAsync(() -> this.updatePlayerData(playerData), this.plugin.getExecutorService()).exceptionally(ex -> {
             ex.printStackTrace();
             return null;
         });
@@ -39,7 +39,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
 
     @Override
     public CompletableFuture<PlayerData> getByPlayer(OfflinePlayer player) {
-        return CompletableFuture.supplyAsync(() -> this.getPlayerData(player));
+        return CompletableFuture.supplyAsync(() -> this.getPlayerData(player), this.plugin.getExecutorService());
     }
 
     private PlayerData getPlayerData(OfflinePlayer player) {
@@ -91,7 +91,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
         if (this.plugin.isStopping()) {
             this.updatePlayerDataSync(playerData);
         } else {
-            CompletableFuture.runAsync(() -> this.updatePlayerDataSync(playerData)).exceptionally(ex -> {
+            CompletableFuture.runAsync(() -> this.updatePlayerDataSync(playerData), this.plugin.getExecutorService()).exceptionally(ex -> {
                 ex.printStackTrace();
                 return null;
             });
@@ -150,7 +150,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        }).exceptionally(ex -> {
+        }, this.plugin.getExecutorService()).exceptionally(ex -> {
             ex.printStackTrace();
             return null;
         });

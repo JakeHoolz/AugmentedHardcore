@@ -49,9 +49,11 @@ public class PlayerRepository {
 
     public CompletableFuture<PlayerData> getByPlayer(OfflinePlayer player) {
         if (!this.playerCache.containsKey(player.getUniqueId())) {
-            return this.mapper.getByPlayer(player).thenApplyAsync(playerData -> this.getFromDataAndCache(player, playerData));
+            return this.mapper.getByPlayer(player)
+                    .thenApplyAsync(playerData -> this.getFromDataAndCache(player, playerData), this.plugin.getExecutorService());
         } else {
-            return CompletableFuture.supplyAsync(() -> player).thenApplyAsync(this::getFromCache).exceptionally(ex -> {
+            return CompletableFuture.supplyAsync(() -> player, this.plugin.getExecutorService())
+                    .thenApplyAsync(this::getFromCache, this.plugin.getExecutorService()).exceptionally(ex -> {
                 ex.printStackTrace();
                 return null;
             });

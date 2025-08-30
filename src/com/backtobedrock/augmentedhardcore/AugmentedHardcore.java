@@ -34,6 +34,8 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class AugmentedHardcore extends JavaPlugin implements Listener {
 
@@ -53,6 +55,9 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
 
     //runnables
     private UpdateChecker updateChecker;
+
+    //executor
+    private final ExecutorService executorService = Executors.newFixedThreadPool(4);
 
     @Override
     public void onEnable() {
@@ -84,6 +89,10 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
             if (serverData != null) {
                 this.getServerRepository().updateServerData(serverData);
             }
+        }
+
+        if (!this.executorService.isShutdown()) {
+            this.executorService.shutdown();
         }
 
         if (this.getConfigurations() != null && this.getConfigurations().getDataConfiguration().getDatabase() != null) {
@@ -281,5 +290,9 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
 
     public UpdateChecker getUpdateChecker() {
         return updateChecker;
+    }
+
+    public ExecutorService getExecutorService() {
+        return executorService;
     }
 }

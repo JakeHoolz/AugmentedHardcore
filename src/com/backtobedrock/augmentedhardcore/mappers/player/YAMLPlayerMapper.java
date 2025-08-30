@@ -34,7 +34,7 @@ public class YAMLPlayerMapper implements IPlayerMapper {
 
     @Override
     public void insertPlayerDataAsync(PlayerData data) {
-        CompletableFuture.runAsync(() -> this.insertPlayerData(data)).exceptionally(ex -> {
+        CompletableFuture.runAsync(() -> this.insertPlayerData(data), this.plugin.getExecutorService()).exceptionally(ex -> {
             ex.printStackTrace();
             return null;
         });
@@ -47,7 +47,7 @@ public class YAMLPlayerMapper implements IPlayerMapper {
 
     @Override
     public CompletableFuture<PlayerData> getByPlayer(OfflinePlayer player) {
-        return CompletableFuture.supplyAsync(() -> PlayerData.deserialize(this.plugin, this.getConfig(player), player));
+        return CompletableFuture.supplyAsync(() -> PlayerData.deserialize(this.plugin, this.getConfig(player), player), this.plugin.getExecutorService());
     }
 
     @Override
@@ -72,7 +72,7 @@ public class YAMLPlayerMapper implements IPlayerMapper {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
             }
-        }).exceptionally(ex -> {
+        }, this.plugin.getExecutorService()).exceptionally(ex -> {
             ex.printStackTrace();
             return null;
         });
