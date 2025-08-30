@@ -131,9 +131,13 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
             Files.copy(configFile.toPath(), copy.toPath());
             ConfigUpdater.update(this, "config.yml", configFile, Arrays.asList("LifePartsPerKill", "MaxHealthIncreasePerKill"));
             configFile = new File(this.getDataFolder(), "config.yml");
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "Failed to update config.yml", e);
+        }
 
+        try {
             //messages.yml
-            copy = new File(this.getDataFolder() + "/old/", "messages.old.yml");
+            File copy = new File(this.getDataFolder() + "/old/", "messages.old.yml");
             if (copy.exists()) {
                 //noinspection ResultOfMethodCallIgnored
                 copy.delete();
@@ -142,7 +146,7 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
             ConfigUpdater.update(this, "messages.yml", messagesFile, Collections.emptyList());
             messagesFile = new File(this.getDataFolder(), "messages.yml");
         } catch (IOException e) {
-            //ignore
+            getLogger().log(Level.SEVERE, "Failed to update messages.yml", e);
         }
 
         //initialize config and messages
