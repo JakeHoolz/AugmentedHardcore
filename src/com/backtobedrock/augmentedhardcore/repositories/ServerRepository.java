@@ -27,7 +27,7 @@ public class ServerRepository {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
         this.initializeMapper();
         this.getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> this.plugin.getLogger().log(Level.INFO, String.format("Loaded %d ongoing death %s.", serverData.getTotalOngoingBans(), serverData.getTotalOngoingBans() != 1 ? "bans" : "ban"))).exceptionally(e -> {
-            e.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, "Could not load server data asynchronously.", e);
             return null;
         });
     }

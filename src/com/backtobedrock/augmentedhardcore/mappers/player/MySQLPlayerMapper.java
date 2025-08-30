@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 
 public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
     private static MySQLPlayerMapper instance;
@@ -27,7 +28,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
     @Override
     public void insertPlayerDataAsync(PlayerData playerData) {
         CompletableFuture.runAsync(() -> this.updatePlayerData(playerData)).exceptionally(ex -> {
-            ex.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, String.format("Could not insert PlayerData for %s.", playerData.getPlayer().getName()), ex);
             return null;
         });
     }
@@ -92,7 +93,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
             this.updatePlayerDataSync(playerData);
         } else {
             CompletableFuture.runAsync(() -> this.updatePlayerDataSync(playerData)).exceptionally(ex -> {
-                ex.printStackTrace();
+                this.plugin.getLogger().log(Level.SEVERE, String.format("Could not update PlayerData for %s asynchronously.", playerData.getPlayer().getName()), ex);
                 return null;
             });
         }
@@ -134,7 +135,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
             preparedStatement.setLong(19, playerData.getTimeTillNextMaxHealth());
             preparedStatement.execute();
         } catch (SQLException e) {
-            e.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, String.format("Could not update PlayerData for %s.", playerData.getPlayer().getName()), e);
         }
     }
 
@@ -148,10 +149,10 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
                 preparedStatement.setString(1, player.getUniqueId().toString());
                 preparedStatement.execute();
             } catch (SQLException e) {
-                e.printStackTrace();
+                this.plugin.getLogger().log(Level.SEVERE, String.format("Could not delete PlayerData for %s.", player.getName()), e);
             }
         }).exceptionally(ex -> {
-            ex.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, String.format("Could not delete PlayerData for %s asynchronously.", player.getName()), ex);
             return null;
         });
     }

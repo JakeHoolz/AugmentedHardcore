@@ -35,7 +35,7 @@ public class YAMLPlayerMapper implements IPlayerMapper {
     @Override
     public void insertPlayerDataAsync(PlayerData data) {
         CompletableFuture.runAsync(() -> this.insertPlayerData(data)).exceptionally(ex -> {
-            ex.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, String.format("Could not insert PlayerData for %s.", data.getPlayer().getName()), ex);
             return null;
         });
     }
@@ -73,7 +73,7 @@ public class YAMLPlayerMapper implements IPlayerMapper {
                 file.delete();
             }
         }).exceptionally(ex -> {
-            ex.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, String.format("Could not delete PlayerData for %s.", player.getName()), ex);
             return null;
         });
     }
