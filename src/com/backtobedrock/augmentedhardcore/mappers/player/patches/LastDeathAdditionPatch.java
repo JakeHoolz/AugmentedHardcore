@@ -1,8 +1,12 @@
 package com.backtobedrock.augmentedhardcore.mappers.player.patches;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.mappers.Patch;
 
 public class LastDeathAdditionPatch extends Patch {
+    public LastDeathAdditionPatch(AugmentedHardcore plugin) {
+        super(plugin);
+    }
     @Override
     protected boolean hasBeenApplied() {
         return this.containsLastDeath();

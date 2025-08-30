@@ -1,7 +1,6 @@
 package com.backtobedrock.augmentedhardcore.mappers;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,11 +9,10 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 
 public abstract class Patch extends AbstractMapper {
-    private final AugmentedHardcore plugin;
     protected boolean success = false;
 
-    public Patch() {
-        this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
+    public Patch(AugmentedHardcore plugin) {
+        super(plugin);
     }
 
     protected abstract boolean hasBeenApplied();

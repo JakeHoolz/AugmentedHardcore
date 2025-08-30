@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.javatuples.Pair;
 
 import java.io.File;
@@ -19,8 +18,8 @@ import java.util.logging.Level;
 public class YAMLServerMapper implements IServerMapper {
     private final AugmentedHardcore plugin;
 
-    public YAMLServerMapper() {
-        this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
+    public YAMLServerMapper(AugmentedHardcore plugin) {
+        this.plugin = plugin;
     }
 
     private void insertServerData(ServerData data) {

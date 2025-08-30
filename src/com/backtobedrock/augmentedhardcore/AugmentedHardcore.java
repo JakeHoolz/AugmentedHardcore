@@ -165,12 +165,12 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
 
         //initialize repositories
         if (this.playerRepository == null) {
-            this.playerRepository = new PlayerRepository();
+            this.playerRepository = new PlayerRepository(this);
         } else {
             this.playerRepository.onReload();
         }
         if (this.serverRepository == null) {
-            this.serverRepository = new ServerRepository();
+            this.serverRepository = new ServerRepository(this);
         }
 
         //register event listeners
@@ -206,7 +206,7 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
 
         //PATCHES
         Arrays.asList(
-                new LastDeathAdditionPatch()
+                new LastDeathAdditionPatch(this)
         ).forEach(Patch::executePatch);
 
         getLogger().info("Setup complete.");

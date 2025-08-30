@@ -1,5 +1,6 @@
 package com.backtobedrock.augmentedhardcore.mappers.ban;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.Killer;
 import com.backtobedrock.augmentedhardcore.domain.Location;
@@ -17,9 +18,13 @@ import java.util.concurrent.CompletableFuture;
 public class MySQLBanMapper extends AbstractMapper implements IBanMapper {
     private static MySQLBanMapper instance;
 
-    public static MySQLBanMapper getInstance() {
+    private MySQLBanMapper(AugmentedHardcore plugin) {
+        super(plugin);
+    }
+
+    public static MySQLBanMapper getInstance(AugmentedHardcore plugin) {
         if (instance == null) {
-            instance = new MySQLBanMapper();
+            instance = new MySQLBanMapper(plugin);
         }
         return instance;
     }

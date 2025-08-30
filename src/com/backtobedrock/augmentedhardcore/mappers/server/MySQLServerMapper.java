@@ -1,5 +1,6 @@
 package com.backtobedrock.augmentedhardcore.mappers.server;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
 import com.backtobedrock.augmentedhardcore.mappers.AbstractMapper;
@@ -23,9 +24,13 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
 
     private static MySQLServerMapper instance;
 
-    public static MySQLServerMapper getInstance() {
+    private MySQLServerMapper(AugmentedHardcore plugin) {
+        super(plugin);
+    }
+
+    public static MySQLServerMapper getInstance(AugmentedHardcore plugin) {
         if (instance == null) {
-            instance = new MySQLServerMapper();
+            instance = new MySQLServerMapper(plugin);
         }
         return instance;
     }
@@ -61,7 +66,7 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
                     totalDeathBans = resultSet.getInt("total_death_bans");
                     String uuidString = resultSet.getString("player_uuid");
                     if (uuidString != null && !uuidString.isEmpty()) {
-                        Pair<Integer, Ban> banPair = MySQLBanMapper.getInstance().getBanFromResultSetSync(resultSet);
+                        Pair<Integer, Ban> banPair = MySQLBanMapper.getInstance(this.plugin).getBanFromResultSetSync(resultSet);
                         if (banPair != null) {
                             deathBans.put(UUID.fromString(uuidString), banPair);
                         }
@@ -92,7 +97,7 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
                 e.printStackTrace();
                 return;
             }
-            data.getOngoingBans().forEach((key, value) -> MySQLBanMapper.getInstance().updateBan(this.plugin.getServer(), key, value.getBan()));
+            data.getOngoingBans().forEach((key, value) -> MySQLBanMapper.getInstance(this.plugin).updateBan(this.plugin.getServer(), key, value.getBan()));
         }).exceptionally(ex -> {
             ex.printStackTrace();
             return null;
@@ -120,6 +125,6 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
 
     @Override
     public void deleteBanFromServerData(UUID uuid, Pair<Integer, Ban> ban) {
-        MySQLBanMapper.getInstance().updateBan(null, uuid, ban);
+        MySQLBanMapper.getInstance(this.plugin).updateBan(null, uuid, ban);
     }
 }

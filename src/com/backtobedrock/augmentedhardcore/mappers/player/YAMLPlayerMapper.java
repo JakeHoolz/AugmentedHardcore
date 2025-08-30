@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,8 +15,8 @@ import java.util.logging.Level;
 public class YAMLPlayerMapper implements IPlayerMapper {
     private final AugmentedHardcore plugin;
 
-    public YAMLPlayerMapper() {
-        this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
+    public YAMLPlayerMapper(AugmentedHardcore plugin) {
+        this.plugin = plugin;
 
         //create userdata folder if none existent
         File udFile = new File(this.plugin.getDataFolder() + "/userdata");

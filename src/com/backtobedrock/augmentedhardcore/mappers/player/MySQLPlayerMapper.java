@@ -1,5 +1,6 @@
 package com.backtobedrock.augmentedhardcore.mappers.player;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import com.backtobedrock.augmentedhardcore.mappers.AbstractMapper;
@@ -17,9 +18,13 @@ import java.util.concurrent.CompletableFuture;
 public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
     private static MySQLPlayerMapper instance;
 
-    public static MySQLPlayerMapper getInstance() {
+    private MySQLPlayerMapper(AugmentedHardcore plugin) {
+        super(plugin);
+    }
+
+    public static MySQLPlayerMapper getInstance(AugmentedHardcore plugin) {
         if (instance == null) {
-            instance = new MySQLPlayerMapper();
+            instance = new MySQLPlayerMapper(plugin);
         }
         return instance;
     }
@@ -69,7 +74,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
                             deathBans
                     );
                 }
-                Pair<Integer, Ban> banPair = MySQLBanMapper.getInstance().getBanFromResultSetSync(resultSet);
+                Pair<Integer, Ban> banPair = MySQLBanMapper.getInstance(this.plugin).getBanFromResultSetSync(resultSet);
                 if (banPair != null) {
                     deathBans.put(banPair.getValue0(), banPair.getValue1());
                 }

@@ -9,7 +9,6 @@ import com.backtobedrock.augmentedhardcore.mappers.player.YAMLPlayerMapper;
 import com.backtobedrock.augmentedhardcore.runnables.ClearCache;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,8 +22,8 @@ public class PlayerRepository {
     private final Map<UUID, PlayerData> playerCache;
     private IPlayerMapper mapper;
 
-    public PlayerRepository() {
-        this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
+    public PlayerRepository(AugmentedHardcore plugin) {
+        this.plugin = plugin;
         this.playerCache = new HashMap<>();
         this.initializeMapper();
     }
@@ -41,9 +40,9 @@ public class PlayerRepository {
 
     private void initializeMapper() {
         if (this.plugin.getConfigurations().getDataConfiguration().getStorageType() == StorageType.MYSQL) {
-            this.mapper = MySQLPlayerMapper.getInstance();
+            this.mapper = MySQLPlayerMapper.getInstance(this.plugin);
         } else {
-            this.mapper = new YAMLPlayerMapper();
+            this.mapper = new YAMLPlayerMapper(this.plugin);
         }
     }
 
