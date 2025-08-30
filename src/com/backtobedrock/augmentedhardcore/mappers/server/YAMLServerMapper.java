@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.javatuples.Pair;
 
 import java.io.File;
@@ -19,8 +18,8 @@ import java.util.logging.Level;
 public class YAMLServerMapper implements IServerMapper {
     private final AugmentedHardcore plugin;
 
-    public YAMLServerMapper() {
-        this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
+    public YAMLServerMapper(AugmentedHardcore plugin) {
+        this.plugin = plugin;
     }
 
     private void insertServerData(ServerData data) {
@@ -31,8 +30,8 @@ public class YAMLServerMapper implements IServerMapper {
 
     @Override
     public void insertServerDataAsync(ServerData data) {
-        CompletableFuture.runAsync(() -> this.insertServerData(data)).exceptionally(ex -> {
-            ex.printStackTrace();
+        CompletableFuture.runAsync(() -> this.insertServerData(data), this.plugin.getExecutor()).exceptionally(ex -> {
+            this.plugin.getLogger().log(Level.SEVERE, "Could not insert server data.", ex);
             return null;
         });
     }
@@ -44,7 +43,7 @@ public class YAMLServerMapper implements IServerMapper {
 
     @Override
     public CompletableFuture<ServerData> getServerData(Server server) {
-        return CompletableFuture.supplyAsync(() -> ServerData.deserialize(getConfig()));
+        return CompletableFuture.supplyAsync(() -> ServerData.deserialize(getConfig()), this.plugin.getExecutor());
     }
 
     @Override
@@ -64,8 +63,8 @@ public class YAMLServerMapper implements IServerMapper {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
             }
-        }).exceptionally(ex -> {
-            ex.printStackTrace();
+        }, this.plugin.getExecutor()).exceptionally(ex -> {
+            this.plugin.getLogger().log(Level.SEVERE, "Could not delete server data file.", ex);
             return null;
         });
     }
@@ -76,8 +75,8 @@ public class YAMLServerMapper implements IServerMapper {
             FileConfiguration config = this.getConfig();
             config.set("OngoingBans." + uuid, null);
             this.saveConfig(config);
-        }).exceptionally(ex -> {
-            ex.printStackTrace();
+        }, this.plugin.getExecutor()).exceptionally(ex -> {
+            this.plugin.getLogger().log(Level.SEVERE, "Could not delete ban from server data.", ex);
             return null;
         });
     }
