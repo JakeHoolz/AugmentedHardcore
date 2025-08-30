@@ -6,7 +6,6 @@ import com.backtobedrock.augmentedhardcore.utilities.MessageUtils;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractPaginatedGui extends AbstractGui {
@@ -58,28 +57,28 @@ public abstract class AbstractPaginatedGui extends AbstractGui {
     }
 
     private ItemStack nextPageDisplayItem() {
-        Map<String, String> placeholders = new HashMap<String, String>() {{
-            put("current_page", Integer.toString(currentPage));
-            put("total_pages", Integer.toString(totalPages));
-            put("next_page", Integer.toString(currentPage + 1));
-        }};
+        Map<String, String> placeholders = Map.of(
+                "current_page", Integer.toString(currentPage),
+                "total_pages", Integer.toString(totalPages),
+                "next_page", Integer.toString(currentPage + 1)
+        );
         return MessageUtils.replaceItemNameAndLorePlaceholders(this.plugin.getConfigurations().getGuisConfiguration().getNextPageDisplay().getItem(), placeholders);
     }
 
     private ItemStack previousPageDisplayItem() {
-        Map<String, String> placeholders = new HashMap<String, String>() {{
-            put("current_page", Integer.toString(currentPage));
-            put("total_pages", Integer.toString(totalPages));
-            put("previous_page", Integer.toString(currentPage - 1));
-        }};
+        Map<String, String> placeholders = Map.of(
+                "current_page", Integer.toString(currentPage),
+                "total_pages", Integer.toString(totalPages),
+                "previous_page", Integer.toString(currentPage - 1)
+        );
         return MessageUtils.replaceItemLorePlacholders(this.plugin.getConfigurations().getGuisConfiguration().getPreviousPageDisplay().getItem(), placeholders);
     }
 
     private ItemStack pageInformationDisplayItem() {
-        Map<String, String> placeholders = new HashMap<String, String>() {{
-            put("current_page", Integer.toString(currentPage));
-            put("total_pages", Integer.toString(totalPages));
-        }};
+        Map<String, String> placeholders = Map.of(
+                "current_page", Integer.toString(currentPage),
+                "total_pages", Integer.toString(totalPages)
+        );
         return MessageUtils.replaceItemNameAndLorePlaceholders(this.plugin.getConfigurations().getGuisConfiguration().getPageInformationDisplay().getItem(), placeholders);
     }
 }

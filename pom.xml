@@ -7,7 +7,7 @@
     <version>3.4.2</version>
     <packaging>jar</packaging>
     <properties>
-        <java.version>8</java.version>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <repositories>

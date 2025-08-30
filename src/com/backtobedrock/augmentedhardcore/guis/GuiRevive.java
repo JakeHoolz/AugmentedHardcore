@@ -7,7 +7,6 @@ import com.backtobedrock.augmentedhardcore.utilities.MessageUtils;
 import org.bukkit.OfflinePlayer;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -41,10 +40,10 @@ public class GuiRevive extends AbstractConfirmationGui {
     public void updateInfo(boolean update) {
         Icon icon;
         if (this.revivingData != null) {
-            Map<String, String> placeholders = new HashMap<String, String>() {{
-                put("player", revivingData.getPlayer().getName());
-                put("lives_number", Integer.toString(revivingData.getLives()));
-            }};
+            Map<String, String> placeholders = Map.of(
+                    "player", revivingData.getPlayer().getName(),
+                    "lives_number", Integer.toString(revivingData.getLives())
+            );
             icon = new Icon(MessageUtils.replaceItemNameAndLorePlaceholders(InventoryUtils.createPlayerSkull(this.plugin.getConfigurations().getGuisConfiguration().getRevivingDisplay().getName(), this.plugin.getConfigurations().getGuisConfiguration().getRevivingDisplay().getLore(), this.reviving), placeholders), Collections.emptyList());
         } else {
             icon = new Icon(this.plugin.getConfigurations().getGuisConfiguration().getLoadingDisplay().getItem(), Collections.emptyList());
