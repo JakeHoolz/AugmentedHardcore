@@ -70,14 +70,14 @@ public class GuiMyStats extends AbstractGui {
         if (!this.plugin.getConfigurations().getMaxHealthConfiguration().isUseMaxHealth()) {
             icon = new Icon(this.plugin.getConfigurations().getGuisConfiguration().getNotAvailableDisplay().getItem(), Collections.emptyList());
         } else {
-            Map<String, String> placeholders = new HashMap<String, String>() {{
-                put("max_health", Double.toString(plugin.getConfigurations().getMaxHealthConfiguration().getMaxHealth()));
-                put("min_health", Double.toString(plugin.getConfigurations().getMaxHealthConfiguration().getMinHealth()));
-                put("current_max_health", playerData.getPlayer().getPlayer() == null ? "-" : Double.toString(playerData.getPlayer().getPlayer().getAttribute(Attribute.MAX_HEALTH).getBaseValue()));
-                put("time_till_next_max_health_long", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextMaxHealth(), TimePattern.LONG));
-                put("time_till_next_max_health_short", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextMaxHealth(), TimePattern.SHORT));
-                put("time_till_next_max_health_digital", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextMaxHealth(), TimePattern.DIGITAL));
-            }};
+            Map<String, String> placeholders = Map.of(
+                    "max_health", Double.toString(plugin.getConfigurations().getMaxHealthConfiguration().getMaxHealth()),
+                    "min_health", Double.toString(plugin.getConfigurations().getMaxHealthConfiguration().getMinHealth()),
+                    "current_max_health", playerData.getPlayer().getPlayer() == null ? "-" : Double.toString(playerData.getPlayer().getPlayer().getAttribute(Attribute.MAX_HEALTH).getBaseValue()),
+                    "time_till_next_max_health_long", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextMaxHealth(), TimePattern.LONG),
+                    "time_till_next_max_health_short", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextMaxHealth(), TimePattern.SHORT),
+                    "time_till_next_max_health_digital", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextMaxHealth(), TimePattern.DIGITAL)
+            );
 
             icon = new Icon(MessageUtils.replaceItemNameAndLorePlaceholders(this.plugin.getConfigurations().getGuisConfiguration().getMaxHealthDisplay().getItem(), placeholders), Collections.emptyList());
         }
@@ -90,11 +90,11 @@ public class GuiMyStats extends AbstractGui {
         if (!this.plugin.getConfigurations().getReviveConfiguration().isUseRevive() || this.isOther) {
             icon = new Icon(this.plugin.getConfigurations().getGuisConfiguration().getNotAvailableDisplay().getItem(), Collections.emptyList());
         } else if (this.playerData.getTimeTillNextRevive() > 0 && !this.sender.hasPermission(Permission.BYPASS_REVIVECOOLDOWN.getPermissionString())) {
-            Map<String, String> placeholders = new HashMap<String, String>() {{
-                put("time_till_next_revive_long", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextRevive(), TimePattern.LONG));
-                put("time_till_next_revive_short", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextRevive(), TimePattern.SHORT));
-                put("time_till_next_revive_digital", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextRevive(), TimePattern.DIGITAL));
-            }};
+            Map<String, String> placeholders = Map.of(
+                    "time_till_next_revive_long", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextRevive(), TimePattern.LONG),
+                    "time_till_next_revive_short", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextRevive(), TimePattern.SHORT),
+                    "time_till_next_revive_digital", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextRevive(), TimePattern.DIGITAL)
+            );
             icon = new Icon(MessageUtils.replaceItemNameAndLorePlaceholders(this.plugin.getConfigurations().getGuisConfiguration().getReviveOnCooldownDisplay().getItem(), placeholders), Collections.emptyList());
         } else {
             icon = new Icon(this.plugin.getConfigurations().getGuisConfiguration().getReviveDisplay().getItem(), Collections.singletonList(new ClickActionOpenPlayerSelectionAnvilGui()));
@@ -109,14 +109,14 @@ public class GuiMyStats extends AbstractGui {
         if (!this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isUseLifeParts()) {
             icon = new Icon(this.plugin.getConfigurations().getGuisConfiguration().getNotAvailableDisplay().getItem(), Collections.emptyList());
         } else {
-            Map<String, String> placeholders = new HashMap<String, String>() {{
-                put("max_life_parts", Integer.toString(plugin.getConfigurations().getLivesAndLifePartsConfiguration().getMaxLifeParts()));
-                put("life_parts_number", Integer.toString(playerData.getLifeParts()));
-                put("life_parts", String.format("%d %s", playerData.getLifeParts(), playerData.getLifeParts() == 1 ? "life part" : "life parts"));
-                put("time_till_next_life_part_long", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextLifePart(), TimePattern.LONG));
-                put("time_till_next_life_part_short", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextLifePart(), TimePattern.SHORT));
-                put("time_till_next_life_part_digital", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextLifePart(), TimePattern.DIGITAL));
-            }};
+            Map<String, String> placeholders = Map.of(
+                    "max_life_parts", Integer.toString(plugin.getConfigurations().getLivesAndLifePartsConfiguration().getMaxLifeParts()),
+                    "life_parts_number", Integer.toString(playerData.getLifeParts()),
+                    "life_parts", String.format("%d %s", playerData.getLifeParts(), playerData.getLifeParts() == 1 ? "life part" : "life parts"),
+                    "time_till_next_life_part_long", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextLifePart(), TimePattern.LONG),
+                    "time_till_next_life_part_short", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextLifePart(), TimePattern.SHORT),
+                    "time_till_next_life_part_digital", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextLifePart(), TimePattern.DIGITAL)
+            );
             icon = new Icon(MessageUtils.replaceItemNameAndLorePlaceholders(this.plugin.getConfigurations().getGuisConfiguration().getLifePartDisplay().getItem(), placeholders), Collections.emptyList());
         }
 
@@ -129,9 +129,9 @@ public class GuiMyStats extends AbstractGui {
         if (!this.plugin.getConfigurations().getDeathBanConfiguration().isUseDeathBan()) {
             icon = new Icon(this.plugin.getConfigurations().getGuisConfiguration().getNotAvailableDisplay().getItem(), Collections.emptyList());
         } else {
-            Map<String, String> placeholders = new HashMap<String, String>() {{
-                put("total_death_bans", Integer.toString(playerData.getBanCount()));
-            }};
+            Map<String, String> placeholders = Map.of(
+                    "total_death_bans", Integer.toString(playerData.getBanCount())
+            );
             icon = new Icon(MessageUtils.replaceItemNameAndLorePlaceholders(this.plugin.getConfigurations().getGuisConfiguration().getPreviousBansDisplay().getItem(), placeholders), Collections.singletonList(new ClickActionOpenBansGui(this.playerData)));
         }
 
