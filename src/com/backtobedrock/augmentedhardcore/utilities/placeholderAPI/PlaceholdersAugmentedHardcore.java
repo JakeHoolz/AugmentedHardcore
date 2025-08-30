@@ -46,29 +46,29 @@ public class PlaceholdersAugmentedHardcore extends PlaceholderExpansion {
             if (playerData != null) {
                 switch (identifier) {
                     case "time_till_next_max_health_short":
-                        return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextMaxHealth(), TimePattern.SHORT);
+                        return MessageUtils.getTimeFromTicks(playerData.getPlaytimeTracker().getTimeTillNextMaxHealth(), TimePattern.SHORT);
                     case "time_till_next_life_part_short":
-                        return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextLifePart(), TimePattern.SHORT);
+                        return MessageUtils.getTimeFromTicks(playerData.getPlaytimeTracker().getTimeTillNextLifePart(), TimePattern.SHORT);
                     case "time_till_next_revive_short":
-                        return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextRevive(), TimePattern.SHORT);
+                        return MessageUtils.getTimeFromTicks(playerData.getPlaytimeTracker().getTimeTillNextRevive(), TimePattern.SHORT);
                     case "time_till_next_max_health_long":
-                        return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextMaxHealth(), TimePattern.LONG);
+                        return MessageUtils.getTimeFromTicks(playerData.getPlaytimeTracker().getTimeTillNextMaxHealth(), TimePattern.LONG);
                     case "time_till_next_life_part_long":
-                        return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextLifePart(), TimePattern.LONG);
+                        return MessageUtils.getTimeFromTicks(playerData.getPlaytimeTracker().getTimeTillNextLifePart(), TimePattern.LONG);
                     case "time_till_next_revive_long":
-                        return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextRevive(), TimePattern.LONG);
+                        return MessageUtils.getTimeFromTicks(playerData.getPlaytimeTracker().getTimeTillNextRevive(), TimePattern.LONG);
                     case "time_till_next_max_health_digital":
-                        return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextMaxHealth(), TimePattern.DIGITAL);
+                        return MessageUtils.getTimeFromTicks(playerData.getPlaytimeTracker().getTimeTillNextMaxHealth(), TimePattern.DIGITAL);
                     case "time_till_next_life_part_digital":
-                        return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextLifePart(), TimePattern.DIGITAL);
+                        return MessageUtils.getTimeFromTicks(playerData.getPlaytimeTracker().getTimeTillNextLifePart(), TimePattern.DIGITAL);
                     case "time_till_next_revive_digital":
-                        return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextRevive(), TimePattern.DIGITAL);
+                        return MessageUtils.getTimeFromTicks(playerData.getPlaytimeTracker().getTimeTillNextRevive(), TimePattern.DIGITAL);
                     case "life_parts":
-                        return Integer.toString(playerData.getLifeParts());
+                        return Integer.toString(playerData.getLifeManager().getLifeParts());
                     case "lives":
-                        return Integer.toString(playerData.getLives());
+                        return Integer.toString(playerData.getLifeManager().getLives());
                     case "player_total_bans":
-                        return Integer.toString(playerData.getBanCount());
+                        return Integer.toString(playerData.getBanManager().getBanCount());
                 }
             }
         }
