@@ -54,7 +54,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
                 + "RIGHT OUTER JOIN ah_player as p ON p.player_uuid = b.player_uuid "
                 + "WHERE p.player_uuid = ?;";
 
-        try (Connection connection = this.database.getDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (Connection connection = this.database.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, player.getUniqueId().toString());
             ResultSet resultSet = preparedStatement.executeQuery();
             NavigableMap<Integer, Ban> deathBans = new TreeMap<>();
@@ -119,7 +119,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
                 + "`time_till_next_life_part` = ?,"
                 + "`time_till_next_max_health` = ?;";
 
-        try (Connection connection = this.database.getDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (Connection connection = this.database.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, playerData.getPlayer().getUniqueId().toString());
             preparedStatement.setString(2, playerData.getPlayer().getName());
             preparedStatement.setString(3, playerData.getLastKnownIp());
@@ -151,7 +151,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
             String sql = "DELETE FROM ah_player " +
                     "WHERE `player_uuid` = ?;";
 
-            try (Connection connection = this.database.getDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try (Connection connection = this.database.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, player.getUniqueId().toString());
                 preparedStatement.execute();
             } catch (SQLException e) {
