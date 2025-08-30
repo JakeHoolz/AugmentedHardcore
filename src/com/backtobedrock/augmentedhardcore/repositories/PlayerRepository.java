@@ -11,11 +11,11 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerRepository {
     private final AugmentedHardcore plugin;
@@ -26,7 +26,7 @@ public class PlayerRepository {
 
     public PlayerRepository() {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
-        this.playerCache = new HashMap<>();
+        this.playerCache = new ConcurrentHashMap<>();
         this.initializeMapper();
     }
 
