@@ -57,7 +57,7 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
                     + "RIGHT OUTER JOIN ah_server as s ON b.server_ip = s.server_ip AND b.server_port = s.server_port "
                     + "WHERE s.server_ip = ? AND s.server_port = ?;";
 
-            try (Connection connection = this.database.getDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try (Connection connection = this.database.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, InetAddress.getLocalHost().getHostAddress());
                 preparedStatement.setInt(2, server.getPort());
                 ResultSet resultSet = preparedStatement.executeQuery();
@@ -88,7 +88,7 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
                     + "VALUES(?, ?, ?)"
                     + "ON DUPLICATE KEY UPDATE `total_death_bans` = ?;";
 
-            try (Connection connection = this.database.getDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try (Connection connection = this.database.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, InetAddress.getLocalHost().getHostAddress());
                 preparedStatement.setInt(2, this.plugin.getServer().getPort());
                 preparedStatement.setInt(3, data.getTotalDeathBans());
@@ -111,7 +111,7 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
             String sql = "DELETE FROM ah_server " +
                     "WHERE server_ip = ? AND server_port = ?;";
 
-            try (Connection connection = this.database.getDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try (Connection connection = this.database.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, InetAddress.getLocalHost().getHostAddress());
                 preparedStatement.setInt(2, this.plugin.getServer().getPort());
                 preparedStatement.execute();

@@ -89,7 +89,7 @@ public class MySQLBanMapper extends AbstractMapper implements IBanMapper {
                     + "`time_since_previous_death_ban` = ?,"
                     + "`time_since_previous_death` = ?;";
 
-            try (Connection connection = this.database.getDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try (Connection connection = this.database.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setInt(1, ban.getValue0());
                 preparedStatement.setString(2, uuid.toString());
                 preparedStatement.setString(3, server != null ? InetAddress.getLocalHost().getHostAddress() : null);
@@ -152,7 +152,7 @@ public class MySQLBanMapper extends AbstractMapper implements IBanMapper {
             String sql = "DELETE FROM ah_ban " +
                     "WHERE ban_id = ? AND player_uuid = ?;";
 
-            try (Connection connection = this.database.getDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try (Connection connection = this.database.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, id.toString());
                 preparedStatement.setString(2, uuid.toString());
                 preparedStatement.execute();

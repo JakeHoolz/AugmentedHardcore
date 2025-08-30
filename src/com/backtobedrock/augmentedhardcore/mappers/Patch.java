@@ -22,7 +22,7 @@ public abstract class Patch extends AbstractMapper {
     protected abstract void applyPatch();
 
     protected void execute(String sql) {
-        try (Connection connection = this.database.getDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (Connection connection = this.database.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.execute();
             this.success = true;
         } catch (SQLException e) {
@@ -44,7 +44,7 @@ public abstract class Patch extends AbstractMapper {
     protected Boolean doesColumnExist(String tableName, String columnName) {
         String sql = "SELECT COUNT(1) as c FROM INFORMATION_SCHEMA.COLUMNS " +
                 "WHERE TABLE_NAME=? AND COLUMN_NAME=?;";
-        try (Connection connection = this.database.getDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (Connection connection = this.database.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, tableName);
             preparedStatement.setString(2, columnName);
             ResultSet resultSet = preparedStatement.executeQuery();

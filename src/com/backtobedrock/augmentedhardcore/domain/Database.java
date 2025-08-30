@@ -1,10 +1,13 @@
 package com.backtobedrock.augmentedhardcore.domain;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
-import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.zaxxer.hikari.HikariDataSource;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.logging.Level;
 
 public class Database {
@@ -75,7 +78,7 @@ public class Database {
         return password;
     }
 
-    public HikariDataSource getDataSource() {
+    private HikariDataSource getDataSource() {
         if (this.dataSource == null) {
             this.dataSource = new HikariDataSource();
             this.dataSource.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s", this.getHostname(), this.getPort(), this.getDatabaseName()));
@@ -89,6 +92,10 @@ public class Database {
             this.dataSource.addDataSourceProperty("useServerPrepStmts", "true");
         }
         return this.dataSource;
+    }
+
+    public Connection getConnection() throws SQLException {
+        return this.getDataSource().getConnection();
     }
 
     public void close() {
