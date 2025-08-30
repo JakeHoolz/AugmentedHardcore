@@ -10,11 +10,10 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 
 public abstract class Patch extends AbstractMapper {
-    private final AugmentedHardcore plugin;
     protected boolean success = false;
 
     public Patch() {
-        this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
+        super(JavaPlugin.getPlugin(AugmentedHardcore.class));
     }
 
     protected abstract boolean hasBeenApplied();

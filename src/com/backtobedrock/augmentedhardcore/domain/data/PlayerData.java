@@ -423,7 +423,7 @@ public class PlayerData {
         this.gainMaxHealth(this.plugin.getConfigurations().getMaxHealthConfiguration().getMaxHealthIncreasePerKill().getOrDefault(type, 0D), player);
     }
 
-    private void gainLifeParts(int amount, Player player) {
+    void gainLifeParts(int amount, Player player) {
         //check if in disabled world
         if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getDisableGainingLifePartsInWorlds().contains(player.getWorld().getName().toLowerCase())) {
             return;
@@ -432,7 +432,7 @@ public class PlayerData {
         this.increaseLifeParts(amount);
     }
 
-    private void gainMaxHealth(double amount, Player player) {
+    void gainMaxHealth(double amount, Player player) {
         //check if in disabled world
         if (this.plugin.getConfigurations().getMaxHealthConfiguration().getDisableGainingMaxHealthInWorlds().contains(player.getWorld().getName().toLowerCase())) {
             return;
