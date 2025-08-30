@@ -40,11 +40,11 @@ public class CommandRevive extends AbstractCommand {
 
                 AbstractGui gui = new GuiRevive(playerData, this.target);
                 PlayerUtils.openInventory(this.sender, gui);
-            }).exceptionally(ex -> {
+            }, this.plugin.getExecutor()).exceptionally(ex -> {
                 this.plugin.getLogger().log(Level.SEVERE, "Error executing revive command.", ex);
                 return null;
             });
-        }).exceptionally(ex -> {
+        }, this.plugin.getExecutor()).exceptionally(ex -> {
             this.plugin.getLogger().log(Level.SEVERE, "Error executing revive command.", ex);
             return null;
         });

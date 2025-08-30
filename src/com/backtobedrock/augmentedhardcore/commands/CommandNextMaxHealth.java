@@ -42,7 +42,7 @@ public class CommandNextMaxHealth extends AbstractCommand {
                 }
 
                 this.runCommand(this.target);
-            }).exceptionally(ex -> {
+            }, this.plugin.getExecutor()).exceptionally(ex -> {
                 this.plugin.getLogger().log(Level.SEVERE, "Error executing next max health command.", ex);
                 return null;
             });
@@ -50,7 +50,7 @@ public class CommandNextMaxHealth extends AbstractCommand {
     }
 
     private void runCommand(OfflinePlayer player) {
-        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(this::sendSuccessMessage).exceptionally(ex -> {
+        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(this::sendSuccessMessage, this.plugin.getExecutor()).exceptionally(ex -> {
             this.plugin.getLogger().log(Level.SEVERE, "Error executing next max health command.", ex);
             return null;
         });
