@@ -6,6 +6,7 @@ import org.javatuples.Pair;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 
 public abstract class AbstractDeathBansGui extends AbstractPaginatedGui {
     protected final Map<Pair<OfflinePlayer, Integer>, Ban> bans = new LinkedHashMap<>();
@@ -62,7 +63,7 @@ public abstract class AbstractDeathBansGui extends AbstractPaginatedGui {
 
             this.customHolder.updateInvent();
         }).exceptionally(ex -> {
-            ex.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, "Error loading death bans GUI.", ex);
             return null;
         });
     }

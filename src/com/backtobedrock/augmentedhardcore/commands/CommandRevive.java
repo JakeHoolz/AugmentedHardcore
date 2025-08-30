@@ -5,6 +5,7 @@ import com.backtobedrock.augmentedhardcore.guis.AbstractGui;
 import com.backtobedrock.augmentedhardcore.guis.GuiRevive;
 import com.backtobedrock.augmentedhardcore.utilities.PlayerUtils;
 import org.bukkit.command.CommandSender;
+import java.util.logging.Level;
 
 public class CommandRevive extends AbstractCommand {
     public CommandRevive(CommandSender cs, String[] args) {
@@ -40,11 +41,11 @@ public class CommandRevive extends AbstractCommand {
                 AbstractGui gui = new GuiRevive(playerData, this.target);
                 PlayerUtils.openInventory(this.sender, gui);
             }).exceptionally(ex -> {
-                ex.printStackTrace();
+                this.plugin.getLogger().log(Level.SEVERE, "Error executing revive command.", ex);
                 return null;
             });
         }).exceptionally(ex -> {
-            ex.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, "Error executing revive command.", ex);
             return null;
         });
     }

@@ -6,6 +6,7 @@ import com.backtobedrock.augmentedhardcore.guis.GuiPlayerDeathBans;
 import com.backtobedrock.augmentedhardcore.utilities.PlayerUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import java.util.logging.Level;
 
 public class CommandDeathBans extends AbstractCommand {
     public CommandDeathBans(CommandSender cs, String[] args) {
@@ -40,7 +41,7 @@ public class CommandDeathBans extends AbstractCommand {
 
                 this.runCommand(this.target);
             }).exceptionally(ex -> {
-                ex.printStackTrace();
+                this.plugin.getLogger().log(Level.SEVERE, "Error executing death bans command.", ex);
                 return null;
             });
         }
@@ -48,7 +49,7 @@ public class CommandDeathBans extends AbstractCommand {
 
     private void runCommand(OfflinePlayer player) {
         this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new GuiPlayerDeathBans(playerData))).exceptionally(ex -> {
-            ex.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, "Error executing death bans command.", ex);
             return null;
         });
     }

@@ -4,6 +4,7 @@ import com.backtobedrock.augmentedhardcore.domain.enums.Command;
 import com.backtobedrock.augmentedhardcore.guis.GuiServerDeathBans;
 import com.backtobedrock.augmentedhardcore.utilities.PlayerUtils;
 import org.bukkit.command.CommandSender;
+import java.util.logging.Level;
 
 public class CommandServerDeathBans extends AbstractCommand {
     public CommandServerDeathBans(CommandSender cs, String[] args) {
@@ -28,7 +29,7 @@ public class CommandServerDeathBans extends AbstractCommand {
 
 
         this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> PlayerUtils.openInventory(this.sender, new GuiServerDeathBans(this.sender, serverData))).exceptionally(ex -> {
-            ex.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, "Error executing server death bans command.", ex);
             return null;
         });
     }

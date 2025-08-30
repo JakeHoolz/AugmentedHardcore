@@ -6,6 +6,7 @@ import com.backtobedrock.augmentedhardcore.utilities.CommandUtils;
 import com.backtobedrock.augmentedhardcore.utilities.PlayerUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import java.util.logging.Level;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,11 +65,11 @@ public class CommandAugmentedHardcore extends AbstractCommand {
 
                         this.plugin.getPlayerRepository().updatePlayerData(playerData);
                     }).exceptionally(ex -> {
-                        ex.printStackTrace();
+                        this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                         return null;
                     });
                 }).exceptionally(ex -> {
-                    ex.printStackTrace();
+                    this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                     return null;
                 });
                 break;
@@ -98,11 +99,11 @@ public class CommandAugmentedHardcore extends AbstractCommand {
 
                         this.plugin.getPlayerRepository().updatePlayerData(playerData);
                     }).exceptionally(ex -> {
-                        ex.printStackTrace();
+                        this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                         return null;
                     });
                 }).exceptionally(ex -> {
-                    ex.printStackTrace();
+                    this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                     return null;
                 });
                 break;
@@ -132,11 +133,11 @@ public class CommandAugmentedHardcore extends AbstractCommand {
 
                         this.plugin.getPlayerRepository().updatePlayerData(playerData);
                     }).exceptionally(ex -> {
-                        ex.printStackTrace();
+                        this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                         return null;
                     });
                 }).exceptionally(ex -> {
-                    ex.printStackTrace();
+                    this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                     return null;
                 });
                 break;
@@ -166,11 +167,11 @@ public class CommandAugmentedHardcore extends AbstractCommand {
 
                         this.plugin.getPlayerRepository().updatePlayerData(playerData);
                     }).exceptionally(ex -> {
-                        ex.printStackTrace();
+                        this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                         return null;
                     });
                 }).exceptionally(ex -> {
-                    ex.printStackTrace();
+                    this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                     return null;
                 });
                 break;
@@ -202,7 +203,7 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                             this.plugin.getMessages().getCommandAddMaxHealthSuccess(this.target.getName(), maxHealth, maxHealthRaw, maxHealthTotal, maxHealthTotalRaw)
                     );
                 }).exceptionally(ex -> {
-                    ex.printStackTrace();
+                    this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                     return null;
                 });
                 break;
@@ -232,7 +233,7 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                             this.plugin.getMessages().getCommandSetMaxHealthSuccess(this.target.getName(), maxHealth, maxHealthRaw)
                     );
                 }).exceptionally(ex -> {
-                    ex.printStackTrace();
+                    this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                     return null;
                 });
                 break;

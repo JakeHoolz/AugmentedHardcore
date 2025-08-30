@@ -27,6 +27,7 @@ import org.javatuples.Pair;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.logging.Level;
 
 public class PlayerData {
     private final AugmentedHardcore plugin;
@@ -331,7 +332,7 @@ public class PlayerData {
         }
 
         this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> serverData.addBan(this, player, this.addBan(ban))).exceptionally(e -> {
-            e.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, "Error processing death ban.", e);
             return null;
         });
     }

@@ -4,6 +4,7 @@ import com.backtobedrock.augmentedhardcore.domain.enums.Command;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import java.util.logging.Level;
 
 public class CommandUnDeathBan extends AbstractCommand {
     public CommandUnDeathBan(CommandSender cs, String[] args) {
@@ -40,7 +41,7 @@ public class CommandUnDeathBan extends AbstractCommand {
 
             this.unDeathBan();
         }).exceptionally(ex -> {
-            ex.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, "Error executing un-death-ban command.", ex);
             return null;
         });
     }
@@ -53,7 +54,7 @@ public class CommandUnDeathBan extends AbstractCommand {
                 this.cs.sendMessage(this.plugin.getMessages().getTargetNotBannedByPluginError(this.target.getName(), this.plugin.getDescription().getName()));
             }
         }).exceptionally(e -> {
-            e.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, "Error executing un-death-ban command.", e);
             return null;
         });
     }

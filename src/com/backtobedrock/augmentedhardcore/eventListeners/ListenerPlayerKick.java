@@ -4,6 +4,8 @@ import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerKickEvent;
 
+import java.util.logging.Level;
+
 public class ListenerPlayerKick extends AbstractEventListener {
 
     @EventHandler
@@ -13,7 +15,7 @@ public class ListenerPlayerKick extends AbstractEventListener {
         }
 
         this.plugin.getPlayerRepository().getByPlayer(event.getPlayer()).thenAcceptAsync(PlayerData::onKick).exceptionally(ex -> {
-            ex.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, "Error handling player kick.", ex);
             return null;
         });
     }

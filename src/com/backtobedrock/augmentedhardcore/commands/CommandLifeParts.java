@@ -5,6 +5,7 @@ import com.backtobedrock.augmentedhardcore.domain.enums.Command;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import java.util.logging.Level;
 
 public class CommandLifeParts extends AbstractCommand {
     public CommandLifeParts(CommandSender cs, String[] args) {
@@ -39,7 +40,7 @@ public class CommandLifeParts extends AbstractCommand {
 
                 this.runCommand(this.target);
             }).exceptionally(ex -> {
-                ex.printStackTrace();
+                this.plugin.getLogger().log(Level.SEVERE, "Error executing life parts command.", ex);
                 return null;
             });
         }
@@ -47,7 +48,7 @@ public class CommandLifeParts extends AbstractCommand {
 
     private void runCommand(OfflinePlayer player) {
         this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(this::sendSuccessMessage).exceptionally(ex -> {
-            ex.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, "Error executing life parts command.", ex);
             return null;
         });
     }

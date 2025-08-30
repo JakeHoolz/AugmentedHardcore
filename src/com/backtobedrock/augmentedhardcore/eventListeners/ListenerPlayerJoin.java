@@ -6,6 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import java.util.logging.Level;
+
 public class ListenerPlayerJoin extends AbstractEventListener {
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -13,7 +15,7 @@ public class ListenerPlayerJoin extends AbstractEventListener {
         Player player = event.getPlayer();
 
         this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(e -> e.onJoin(player)).exceptionally(ex -> {
-            ex.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, "Error handling player join.", ex);
             return null;
         });
 

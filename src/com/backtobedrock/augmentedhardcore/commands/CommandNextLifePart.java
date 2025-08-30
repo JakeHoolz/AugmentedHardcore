@@ -8,6 +8,7 @@ import com.backtobedrock.augmentedhardcore.utilities.MessageUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import java.util.logging.Level;
 
 public class CommandNextLifePart extends AbstractCommand {
     public CommandNextLifePart(CommandSender cs, String[] args) {
@@ -42,7 +43,7 @@ public class CommandNextLifePart extends AbstractCommand {
 
                 this.runCommand(this.target);
             }).exceptionally(ex -> {
-                ex.printStackTrace();
+                this.plugin.getLogger().log(Level.SEVERE, "Error executing next life part command.", ex);
                 return null;
             });
         }
@@ -50,7 +51,7 @@ public class CommandNextLifePart extends AbstractCommand {
 
     private void runCommand(OfflinePlayer player) {
         this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(this::sendSuccessMessage).exceptionally(ex -> {
-            ex.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, "Error executing next life part command.", ex);
             return null;
         });
     }
