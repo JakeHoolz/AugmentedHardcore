@@ -48,44 +48,32 @@ public class PlayerRepository {
     }
 
     public CompletableFuture<PlayerData> getByPlayer(OfflinePlayer player) {
-        if (!this.playerCache.containsKey(player.getUniqueId())) {
-            return this.mapper.getByPlayer(player)
-                    .thenApplyAsync(playerData -> this.getFromDataAndCache(player, playerData), this.plugin.getExecutor());
-        } else {
-            return CompletableFuture.supplyAsync(() -> player, this.plugin.getExecutor())
-                    .thenApplyAsync(this::getFromCache, this.plugin.getExecutor())
-                    .exceptionally(ex -> {
-                        this.plugin.getLogger().log(Level.SEVERE, String.format("Failed to retrieve PlayerData for %s from cache.", player.getName()), ex);
-                        return null;
-                    });
-        }
+        return CompletableFuture.supplyAsync(() ->
+                        this.playerCache.computeIfAbsent(player.getUniqueId(), uuid -> this.loadPlayerData(player)),
+                this.plugin.getExecutor())
+                .exceptionally(ex -> {
+                    this.plugin.getLogger().log(Level.SEVERE, String.format("Failed to retrieve PlayerData for %s from cache.", player.getName()), ex);
+                    return null;
+                });
     }
 
     public PlayerData getByPlayerSync(OfflinePlayer player) {
-        if (!this.playerCache.containsKey(player.getUniqueId())) {
-            return this.getFromDataAndCache(player, this.mapper.getByPlayerSync(player));
-        } else {
-            return this.getFromCache(player);
-        }
+        return this.playerCache.computeIfAbsent(player.getUniqueId(), uuid -> this.loadPlayerData(player));
     }
 
-    private PlayerData getFromDataAndCache(OfflinePlayer player, PlayerData playerData) {
+    private PlayerData loadPlayerData(OfflinePlayer player) {
+        PlayerData playerData = this.mapper.getByPlayerSync(player);
         if (playerData == null) {
             playerData = new PlayerData(this.plugin, player);
             if (player.hasPlayedBefore())
                 this.mapper.insertPlayerDataAsync(playerData);
         }
-        this.playerCache.put(player.getUniqueId(), playerData);
 
         if (!player.isOnline()) {
             new ClearCache(player).runTaskLater(this.plugin, 6000);
         }
 
-        return this.getFromCache(player);
-    }
-
-    private PlayerData getFromCache(OfflinePlayer player) {
-        return this.playerCache.get(player.getUniqueId());
+        return playerData;
     }
 
     public void updatePlayerData(PlayerData data) {
