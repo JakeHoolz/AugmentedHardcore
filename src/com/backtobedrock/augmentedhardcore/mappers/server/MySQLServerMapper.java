@@ -1,5 +1,6 @@
 package com.backtobedrock.augmentedhardcore.mappers.server;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
 import com.backtobedrock.augmentedhardcore.mappers.AbstractMapper;
@@ -18,22 +19,27 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 
 public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
 
     private static MySQLServerMapper instance;
 
-    public static MySQLServerMapper getInstance() {
+    public static synchronized MySQLServerMapper getInstance(AugmentedHardcore plugin) {
         if (instance == null) {
-            instance = new MySQLServerMapper();
+            instance = new MySQLServerMapper(plugin);
         }
         return instance;
     }
 
+    private MySQLServerMapper(AugmentedHardcore plugin) {
+        super(plugin);
+    }
+
     @Override
     public void insertServerDataAsync(ServerData serverData) {
-        CompletableFuture.runAsync(() -> this.updateServerData(serverData)).exceptionally(ex -> {
-            ex.printStackTrace();
+        CompletableFuture.runAsync(() -> this.updateServerData(serverData), this.plugin.getExecutor()).exceptionally(ex -> {
+            this.plugin.getLogger().log(Level.SEVERE, "Could not insert server data asynchronously.", ex);
             return null;
         });
     }
@@ -61,7 +67,7 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
                     totalDeathBans = resultSet.getInt("total_death_bans");
                     String uuidString = resultSet.getString("player_uuid");
                     if (uuidString != null && !uuidString.isEmpty()) {
-                        Pair<Integer, Ban> banPair = MySQLBanMapper.getInstance().getBanFromResultSetSync(resultSet);
+                        Pair<Integer, Ban> banPair = MySQLBanMapper.getInstance(this.plugin).getBanFromResultSetSync(resultSet);
                         if (banPair != null) {
                             deathBans.put(UUID.fromString(uuidString), banPair);
                         }
@@ -69,10 +75,10 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
                 }
                 return new ServerData(totalDeathBans, deathBans);
             } catch (SQLException | UnknownHostException e) {
-                e.printStackTrace();
+                this.plugin.getLogger().log(Level.SEVERE, "Could not load server data.", e);
             }
             return null;
-        });
+        }, this.plugin.getExecutor());
     }
 
     @Override
@@ -89,12 +95,12 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
                 preparedStatement.setInt(4, data.getTotalDeathBans());
                 preparedStatement.execute();
             } catch (SQLException | UnknownHostException e) {
-                e.printStackTrace();
+                this.plugin.getLogger().log(Level.SEVERE, "Could not update server data.", e);
                 return;
             }
-            data.getOngoingBans().forEach((key, value) -> MySQLBanMapper.getInstance().updateBan(this.plugin.getServer(), key, value.getBan()));
-        }).exceptionally(ex -> {
-            ex.printStackTrace();
+            data.getOngoingBans().forEach((key, value) -> MySQLBanMapper.getInstance(this.plugin).updateBan(this.plugin.getServer(), key, value.getBan()));
+        }, this.plugin.getExecutor()).exceptionally(ex -> {
+            this.plugin.getLogger().log(Level.SEVERE, "Could not update server data asynchronously.", ex);
             return null;
         });
     }
@@ -110,16 +116,16 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
                 preparedStatement.setInt(2, this.plugin.getServer().getPort());
                 preparedStatement.execute();
             } catch (SQLException | UnknownHostException e) {
-                e.printStackTrace();
+                this.plugin.getLogger().log(Level.SEVERE, "Could not delete server data.", e);
             }
-        }).exceptionally(ex -> {
-            ex.printStackTrace();
+        }, this.plugin.getExecutor()).exceptionally(ex -> {
+            this.plugin.getLogger().log(Level.SEVERE, "Could not delete server data asynchronously.", ex);
             return null;
         });
     }
 
     @Override
     public void deleteBanFromServerData(UUID uuid, Pair<Integer, Ban> ban) {
-        MySQLBanMapper.getInstance().updateBan(null, uuid, ban);
+        MySQLBanMapper.getInstance(this.plugin).updateBan(null, uuid, ban);
     }
 }

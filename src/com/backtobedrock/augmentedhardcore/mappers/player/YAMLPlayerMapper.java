@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,8 +15,8 @@ import java.util.logging.Level;
 public class YAMLPlayerMapper implements IPlayerMapper {
     private final AugmentedHardcore plugin;
 
-    public YAMLPlayerMapper() {
-        this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
+    public YAMLPlayerMapper(AugmentedHardcore plugin) {
+        this.plugin = plugin;
 
         //create userdata folder if none existent
         File udFile = new File(this.plugin.getDataFolder() + "/userdata");
@@ -34,7 +33,7 @@ public class YAMLPlayerMapper implements IPlayerMapper {
 
     @Override
     public void insertPlayerDataAsync(PlayerData data) {
-        CompletableFuture.runAsync(() -> this.insertPlayerData(data)).exceptionally(ex -> {
+        CompletableFuture.runAsync(() -> this.insertPlayerData(data), this.plugin.getExecutor()).exceptionally(ex -> {
             this.plugin.getLogger().log(Level.SEVERE, String.format("Could not insert PlayerData for %s.", data.getPlayer().getName()), ex);
             return null;
         });
@@ -47,7 +46,7 @@ public class YAMLPlayerMapper implements IPlayerMapper {
 
     @Override
     public CompletableFuture<PlayerData> getByPlayer(OfflinePlayer player) {
-        return CompletableFuture.supplyAsync(() -> PlayerData.deserialize(this.plugin, this.getConfig(player), player));
+        return CompletableFuture.supplyAsync(() -> PlayerData.deserialize(this.plugin, this.getConfig(player), player), this.plugin.getExecutor());
     }
 
     @Override
@@ -72,7 +71,7 @@ public class YAMLPlayerMapper implements IPlayerMapper {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
             }
-        }).exceptionally(ex -> {
+        }, this.plugin.getExecutor()).exceptionally(ex -> {
             this.plugin.getLogger().log(Level.SEVERE, String.format("Could not delete PlayerData for %s.", player.getName()), ex);
             return null;
         });
