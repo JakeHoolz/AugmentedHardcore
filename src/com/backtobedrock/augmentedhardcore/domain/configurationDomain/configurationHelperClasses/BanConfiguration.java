@@ -7,6 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.logging.Level;
 
 public class BanConfiguration {
@@ -21,7 +22,7 @@ public class BanConfiguration {
     public static BanConfiguration deserialize(DamageCause cause, ConfigurationSection section) {
         AugmentedHardcore plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
 
-        int cBanTime = ConfigUtils.checkMinMaxNoNotification(section.getInt("BanTime", cause.getDefaultBantime()), -1, Integer.MAX_VALUE);
+        OptionalInt cBanTime = ConfigUtils.checkMinMaxNoNotification(section.getInt("BanTime", cause.getDefaultBantime()), -1, Integer.MAX_VALUE);
         List<String> cDisplayMessages = section.contains("DisplayMessages") ? section.getStringList("DisplayMessages") : null;
 
         if (cDisplayMessages == null) {
@@ -29,12 +30,12 @@ public class BanConfiguration {
             plugin.getLogger().log(Level.SEVERE, String.format("DeathCauseConfigurations: %s didn't have correct DisplayMessages configured and default value will be used: %s.", cause.name(), cause.getDefaultDisplayMessages().toString()));
         }
 
-        if (cBanTime == -10) {
-            cBanTime = cause.getDefaultBantime();
+        int banTime = cBanTime.orElse(cause.getDefaultBantime());
+        if (cBanTime.isEmpty()) {
             plugin.getLogger().log(Level.SEVERE, String.format("DeathCauseConfigurations: %s didn't have a correct BanTime configured and default value will be used: %d.", cause.name(), cause.getDefaultBantime()));
         }
 
-        return new BanConfiguration(cBanTime, cDisplayMessages);
+        return new BanConfiguration(banTime, cDisplayMessages);
     }
 
     public int getBanTime() {

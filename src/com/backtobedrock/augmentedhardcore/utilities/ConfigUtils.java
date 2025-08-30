@@ -9,50 +9,52 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
 import java.util.logging.Level;
 
 public class ConfigUtils {
-    public static int checkMin(String id, int value, int min) {
+    public static OptionalInt checkMin(String id, int value, int min) {
         if (value >= min) {
-            return value;
+            return OptionalInt.of(value);
         } else {
             sendErrorMessage(String.format("%s: value cannot be lower than %d, your value is: %d", id, min, value));
-            return -10;
+            return OptionalInt.empty();
         }
     }
 
-    public static int checkMinMaxNoNotification(int value, int min, int max) {
+    public static OptionalInt checkMinMaxNoNotification(int value, int min, int max) {
         if (value >= min && value <= max) {
-            return value;
+            return OptionalInt.of(value);
         } else {
-            return -10;
+            return OptionalInt.empty();
         }
     }
 
-    public static double checkMin(String id, double value, double min) {
+    public static OptionalDouble checkMin(String id, double value, double min) {
         if (value >= min) {
-            return value;
+            return OptionalDouble.of(value);
         } else {
             sendErrorMessage(String.format("%s: value cannot be lower than %f, your value is: %f", id, min, value));
-            return -10;
+            return OptionalDouble.empty();
         }
     }
 
-    public static double checkMinMax(String id, double value, double min, double max) {
+    public static OptionalDouble checkMinMax(String id, double value, double min, double max) {
         if (value >= min && value <= max) {
-            return value;
+            return OptionalDouble.of(value);
         } else {
             sendErrorMessage(String.format("%s: value cannot be lower than %f and higher than %f, your value is: %f", id, min, max, value));
-            return -10;
+            return OptionalDouble.empty();
         }
     }
 
-    public static int checkMinMax(String id, int value, int min, int max) {
+    public static OptionalInt checkMinMax(String id, int value, int min, int max) {
         if (value >= min && value <= max) {
-            return value;
+            return OptionalInt.of(value);
         } else {
             sendErrorMessage(String.format("%s: value cannot be lower than %d and higher than %d, your value is: %d", id, min, max, value));
-            return -10;
+            return OptionalInt.empty();
         }
     }
 

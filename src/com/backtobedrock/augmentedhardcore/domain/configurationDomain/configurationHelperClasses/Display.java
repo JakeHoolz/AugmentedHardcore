@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.logging.Level;
 
 public class Display {
@@ -32,18 +33,18 @@ public class Display {
         Material cMaterial = ConfigUtils.getMaterial(id + ".Material", section.getString("Material"));
         String cName = section.getString("Name");
         List<String> cLore = section.getStringList("Lore");
-        int cAmount = ConfigUtils.checkMinMax(id + ".Amount", section.getInt("Amount", 1), 1, Integer.MAX_VALUE);
+        OptionalInt cAmount = ConfigUtils.checkMinMax(id + ".Amount", section.getInt("Amount", 1), 1, Integer.MAX_VALUE);
 
         if (cName == null) {
             plugin.getLogger().log(Level.SEVERE, id + ".Name: %s is not a valid name.");
             return null;
         }
 
-        if (cAmount == -10 || cMaterial == null) {
+        if (cAmount.isEmpty() || cMaterial == null) {
             return null;
         }
 
-        return new Display(cMaterial, cName, cLore, cAmount);
+        return new Display(cMaterial, cName, cLore, cAmount.getAsInt());
     }
 
     public ItemStack getItem() {

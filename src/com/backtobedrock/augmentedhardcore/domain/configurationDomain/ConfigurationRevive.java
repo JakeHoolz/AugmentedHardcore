@@ -4,6 +4,7 @@ import com.backtobedrock.augmentedhardcore.utilities.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.List;
+import java.util.OptionalInt;
 
 public class ConfigurationRevive {
     private final boolean useRevive;
@@ -24,21 +25,21 @@ public class ConfigurationRevive {
 
     public static ConfigurationRevive deserialize(ConfigurationSection section) {
         boolean cUseRevive = section.getBoolean("UseRevive", true);
-        int cLivesLostOnReviving = ConfigUtils.checkMinMax("LivesLostOnReviving", section.getInt("LivesLostOnReviving", 1), 1, Integer.MAX_VALUE);
-        int cLivesGainedOnRevive = ConfigUtils.checkMinMax("LivesGainedOnRevive", section.getInt("LivesGainedOnRevive", 1), 1, Integer.MAX_VALUE);
-        int cTimeBetweenRevives = ConfigUtils.checkMinMax("TimeBetweenRevives", section.getInt("TimeBetweenRevives", 1440), 0, Integer.MAX_VALUE);
+        OptionalInt cLivesLostOnReviving = ConfigUtils.checkMinMax("LivesLostOnReviving", section.getInt("LivesLostOnReviving", 1), 1, Integer.MAX_VALUE);
+        OptionalInt cLivesGainedOnRevive = ConfigUtils.checkMinMax("LivesGainedOnRevive", section.getInt("LivesGainedOnRevive", 1), 1, Integer.MAX_VALUE);
+        OptionalInt cTimeBetweenRevives = ConfigUtils.checkMinMax("TimeBetweenRevives", section.getInt("TimeBetweenRevives", 1440), 0, Integer.MAX_VALUE);
         boolean cReviveOnFirstJoin = section.getBoolean("ReviveOnFirstJoin", false);
         List<String> cDisableReviveInWorlds = section.getStringList("DisableReviveInWorlds").stream().map(String::toLowerCase).toList();
 
-        if (cTimeBetweenRevives == -10 || cLivesLostOnReviving == -10 || cLivesGainedOnRevive == -10) {
+        if (cTimeBetweenRevives.isEmpty() || cLivesLostOnReviving.isEmpty() || cLivesGainedOnRevive.isEmpty()) {
             return null;
         }
 
         return new ConfigurationRevive(
                 cUseRevive,
-                cLivesLostOnReviving,
-                cLivesGainedOnRevive,
-                cTimeBetweenRevives * 1200,
+                cLivesLostOnReviving.getAsInt(),
+                cLivesGainedOnRevive.getAsInt(),
+                cTimeBetweenRevives.getAsInt() * 1200,
                 cReviveOnFirstJoin,
                 cDisableReviveInWorlds
         );
