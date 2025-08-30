@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 
 public class PlayerRepository {
     private final AugmentedHardcore plugin;
@@ -52,7 +53,7 @@ public class PlayerRepository {
             return this.mapper.getByPlayer(player).thenApplyAsync(playerData -> this.getFromDataAndCache(player, playerData));
         } else {
             return CompletableFuture.supplyAsync(() -> player).thenApplyAsync(this::getFromCache).exceptionally(ex -> {
-                ex.printStackTrace();
+                this.plugin.getLogger().log(Level.SEVERE, String.format("Failed to retrieve PlayerData for %s from cache.", player.getName()), ex);
                 return null;
             });
         }
