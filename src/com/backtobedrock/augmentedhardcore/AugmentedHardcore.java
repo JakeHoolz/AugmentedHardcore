@@ -86,6 +86,10 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
             }
         }
 
+        if (this.getConfigurations() != null && this.getConfigurations().getDataConfiguration().getDatabase() != null) {
+            this.getConfigurations().getDataConfiguration().getDatabase().close();
+        }
+
         super.onDisable();
     }
 
@@ -131,9 +135,13 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
             Files.copy(configFile.toPath(), copy.toPath());
             ConfigUpdater.update(this, "config.yml", configFile, Arrays.asList("LifePartsPerKill", "MaxHealthIncreasePerKill"));
             configFile = new File(this.getDataFolder(), "config.yml");
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "Failed to update config.yml", e);
+        }
 
+        try {
             //messages.yml
-            copy = new File(this.getDataFolder() + "/old/", "messages.old.yml");
+            File copy = new File(this.getDataFolder() + "/old/", "messages.old.yml");
             if (copy.exists()) {
                 //noinspection ResultOfMethodCallIgnored
                 copy.delete();
@@ -142,7 +150,7 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
             ConfigUpdater.update(this, "messages.yml", messagesFile, Collections.emptyList());
             messagesFile = new File(this.getDataFolder(), "messages.yml");
         } catch (IOException e) {
-            //ignore
+            getLogger().log(Level.SEVERE, "Failed to update messages.yml", e);
         }
 
         //initialize config and messages
@@ -183,8 +191,9 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
         }
         String[] queries = setup.split(";");
         for (String query : queries) {
+            query = query.trim();
             if (query.isEmpty()) {
-                return;
+                continue;
             }
             try (Connection conn = this.getConfigurations().getDataConfiguration().getDatabase().getDataSource().getConnection();
                  PreparedStatement stmt = conn.prepareStatement(query)) {

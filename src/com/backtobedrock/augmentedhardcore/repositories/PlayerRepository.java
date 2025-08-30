@@ -68,7 +68,7 @@ public class PlayerRepository {
 
     private PlayerData getFromDataAndCache(OfflinePlayer player, PlayerData playerData) {
         if (playerData == null) {
-            playerData = new PlayerData(player);
+            playerData = new PlayerData(this.plugin, player);
             if (player.hasPlayedBefore())
                 this.mapper.insertPlayerDataAsync(playerData);
         }

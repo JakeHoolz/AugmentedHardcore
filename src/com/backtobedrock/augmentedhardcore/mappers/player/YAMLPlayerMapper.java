@@ -47,12 +47,12 @@ public class YAMLPlayerMapper implements IPlayerMapper {
 
     @Override
     public CompletableFuture<PlayerData> getByPlayer(OfflinePlayer player) {
-        return CompletableFuture.supplyAsync(() -> PlayerData.deserialize(this.getConfig(player), player));
+        return CompletableFuture.supplyAsync(() -> PlayerData.deserialize(this.plugin, this.getConfig(player), player));
     }
 
     @Override
     public PlayerData getByPlayerSync(OfflinePlayer player) {
-        return PlayerData.deserialize(this.getConfig(player), player);
+        return PlayerData.deserialize(this.plugin, this.getConfig(player), player);
     }
 
     @Override

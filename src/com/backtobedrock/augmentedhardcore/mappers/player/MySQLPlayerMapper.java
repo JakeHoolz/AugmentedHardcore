@@ -56,6 +56,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
             while (resultSet.next()) {
                 if (playerData == null) {
                     playerData = new PlayerData(
+                            this.plugin,
                             player,
                             resultSet.getString("last_known_ip"),
                             resultSet.getTimestamp("last_death") == null ? LocalDateTime.now() : resultSet.getTimestamp("last_death").toLocalDateTime(),
