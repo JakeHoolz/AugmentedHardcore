@@ -32,6 +32,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -53,6 +55,9 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
 
     //runnables
     private UpdateChecker updateChecker;
+
+    //async executor
+    private ExecutorService executor;
 
     @Override
     public void onEnable() {
@@ -86,6 +91,10 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
             }
         }
 
+        if (this.executor != null) {
+            this.executor.shutdown();
+        }
+
         if (this.getConfigurations() != null && this.getConfigurations().getDataConfiguration().getDatabase() != null) {
             this.getConfigurations().getDataConfiguration().getDatabase().close();
         }
@@ -99,6 +108,10 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
     }
 
     public void initialize() {
+        if (this.executor == null || this.executor.isShutdown()) {
+            this.executor = Executors.newFixedThreadPool(Math.max(2, Runtime.getRuntime().availableProcessors()));
+        }
+
         //initialize old config directory
         File dir = new File(this.getDataFolder() + "/old");
         List<File> configs = new ArrayList<File>() {{
@@ -165,12 +178,12 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
 
         //initialize repositories
         if (this.playerRepository == null) {
-            this.playerRepository = new PlayerRepository();
+            this.playerRepository = new PlayerRepository(this);
         } else {
             this.playerRepository.onReload();
         }
         if (this.serverRepository == null) {
-            this.serverRepository = new ServerRepository();
+            this.serverRepository = new ServerRepository(this);
         }
 
         //register event listeners
@@ -187,7 +200,6 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
             setup = new BufferedReader(new InputStreamReader(in)).lines().collect(Collectors.joining());
         } catch (IOException | NullPointerException e) {
             getLogger().log(Level.SEVERE, "Could not read db setup file.", e);
-            e.printStackTrace();
         }
         String[] queries = setup.split(";");
         for (String query : queries) {
@@ -200,7 +212,7 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
                 stmt.execute();
 
             } catch (SQLException e) {
-                e.printStackTrace();
+                getLogger().log(Level.SEVERE, "Could not execute db setup query.", e);
             }
         }
 
@@ -281,5 +293,9 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
 
     public UpdateChecker getUpdateChecker() {
         return updateChecker;
+    }
+
+    public ExecutorService getExecutor() {
+        return executor;
     }
 }

@@ -1,5 +1,6 @@
 package com.backtobedrock.augmentedhardcore.mappers.player;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import com.backtobedrock.augmentedhardcore.mappers.AbstractMapper;
@@ -16,18 +17,16 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
-    private static MySQLPlayerMapper instance;
+    private final MySQLBanMapper banMapper;
 
-    public static MySQLPlayerMapper getInstance() {
-        if (instance == null) {
-            instance = new MySQLPlayerMapper();
-        }
-        return instance;
+    public MySQLPlayerMapper(AugmentedHardcore plugin) {
+        super(plugin);
+        this.banMapper = new MySQLBanMapper(plugin);
     }
 
     @Override
     public void insertPlayerDataAsync(PlayerData playerData) {
-        CompletableFuture.runAsync(() -> this.updatePlayerData(playerData)).exceptionally(ex -> {
+        CompletableFuture.runAsync(() -> this.updatePlayerData(playerData), this.plugin.getExecutor()).exceptionally(ex -> {
             this.plugin.getLogger().log(Level.SEVERE, String.format("Could not insert PlayerData for %s.", playerData.getPlayer().getName()), ex);
             return null;
         });
@@ -40,7 +39,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
 
     @Override
     public CompletableFuture<PlayerData> getByPlayer(OfflinePlayer player) {
-        return CompletableFuture.supplyAsync(() -> this.getPlayerData(player));
+        return CompletableFuture.supplyAsync(() -> this.getPlayerData(player), this.plugin.getExecutor());
     }
 
     private PlayerData getPlayerData(OfflinePlayer player) {
@@ -70,14 +69,14 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
                             deathBans
                     );
                 }
-                Pair<Integer, Ban> banPair = MySQLBanMapper.getInstance().getBanFromResultSetSync(resultSet);
+                Pair<Integer, Ban> banPair = this.banMapper.getBanFromResultSetSync(resultSet);
                 if (banPair != null) {
                     deathBans.put(banPair.getValue0(), banPair.getValue1());
                 }
             }
             return playerData;
         } catch (SQLException e) {
-            e.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, String.format("Could not get PlayerData for %s.", player.getName()), e);
         }
         return null;
     }
@@ -92,7 +91,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
         if (this.plugin.isStopping()) {
             this.updatePlayerDataSync(playerData);
         } else {
-            CompletableFuture.runAsync(() -> this.updatePlayerDataSync(playerData)).exceptionally(ex -> {
+            CompletableFuture.runAsync(() -> this.updatePlayerDataSync(playerData), this.plugin.getExecutor()).exceptionally(ex -> {
                 this.plugin.getLogger().log(Level.SEVERE, String.format("Could not update PlayerData for %s asynchronously.", playerData.getPlayer().getName()), ex);
                 return null;
             });
@@ -152,7 +151,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
             } catch (SQLException e) {
                 this.plugin.getLogger().log(Level.SEVERE, String.format("Could not delete PlayerData for %s.", player.getName()), e);
             }
-        }).exceptionally(ex -> {
+        }, this.plugin.getExecutor()).exceptionally(ex -> {
             this.plugin.getLogger().log(Level.SEVERE, String.format("Could not delete PlayerData for %s asynchronously.", player.getName()), ex);
             return null;
         });

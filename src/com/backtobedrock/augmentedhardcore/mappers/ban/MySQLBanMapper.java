@@ -1,5 +1,6 @@
 package com.backtobedrock.augmentedhardcore.mappers.ban;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.Killer;
 import com.backtobedrock.augmentedhardcore.domain.Location;
@@ -13,15 +14,12 @@ import java.net.UnknownHostException;
 import java.sql.*;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 
 public class MySQLBanMapper extends AbstractMapper implements IBanMapper {
-    private static MySQLBanMapper instance;
 
-    public static MySQLBanMapper getInstance() {
-        if (instance == null) {
-            instance = new MySQLBanMapper();
-        }
-        return instance;
+    public MySQLBanMapper(AugmentedHardcore plugin) {
+        super(plugin);
     }
 
     public Pair<Integer, Ban> getBanFromResultSetSync(ResultSet resultSet) {
@@ -44,7 +42,7 @@ public class MySQLBanMapper extends AbstractMapper implements IBanMapper {
                 );
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, "Could not parse ban from result set.", e);
         }
         return null;
     }
@@ -132,10 +130,10 @@ public class MySQLBanMapper extends AbstractMapper implements IBanMapper {
                 preparedStatement.setLong(46, ban.getValue1().getTimeSincePreviousDeath());
                 preparedStatement.execute();
             } catch (SQLException | UnknownHostException e) {
-                e.printStackTrace();
+                this.plugin.getLogger().log(Level.SEVERE, "Could not update ban.", e);
             }
-        }).exceptionally(ex -> {
-            ex.printStackTrace();
+        }, this.plugin.getExecutor()).exceptionally(ex -> {
+            this.plugin.getLogger().log(Level.SEVERE, "Could not update ban asynchronously.", ex);
             return null;
         });
     }
@@ -151,10 +149,10 @@ public class MySQLBanMapper extends AbstractMapper implements IBanMapper {
                 preparedStatement.setString(2, uuid.toString());
                 preparedStatement.execute();
             } catch (SQLException e) {
-                e.printStackTrace();
+                this.plugin.getLogger().log(Level.SEVERE, "Could not delete ban.", e);
             }
-        }).exceptionally(ex -> {
-            ex.printStackTrace();
+        }, this.plugin.getExecutor()).exceptionally(ex -> {
+            this.plugin.getLogger().log(Level.SEVERE, "Could not delete ban asynchronously.", ex);
             return null;
         });
     }

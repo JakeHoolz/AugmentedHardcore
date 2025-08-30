@@ -9,13 +9,12 @@ import com.backtobedrock.augmentedhardcore.mappers.player.YAMLPlayerMapper;
 import com.backtobedrock.augmentedhardcore.runnables.ClearCache;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Level;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 
 public class PlayerRepository {
     private final AugmentedHardcore plugin;
@@ -24,8 +23,8 @@ public class PlayerRepository {
     private final Map<UUID, PlayerData> playerCache;
     private IPlayerMapper mapper;
 
-    public PlayerRepository() {
-        this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
+    public PlayerRepository(AugmentedHardcore plugin) {
+        this.plugin = plugin;
         this.playerCache = new ConcurrentHashMap<>();
         this.initializeMapper();
     }
@@ -42,20 +41,23 @@ public class PlayerRepository {
 
     private void initializeMapper() {
         if (this.plugin.getConfigurations().getDataConfiguration().getStorageType() == StorageType.MYSQL) {
-            this.mapper = MySQLPlayerMapper.getInstance();
+            this.mapper = new MySQLPlayerMapper(this.plugin);
         } else {
-            this.mapper = new YAMLPlayerMapper();
+            this.mapper = new YAMLPlayerMapper(this.plugin);
         }
     }
 
     public CompletableFuture<PlayerData> getByPlayer(OfflinePlayer player) {
         if (!this.playerCache.containsKey(player.getUniqueId())) {
-            return this.mapper.getByPlayer(player).thenApplyAsync(playerData -> this.getFromDataAndCache(player, playerData));
+            return this.mapper.getByPlayer(player)
+                    .thenApplyAsync(playerData -> this.getFromDataAndCache(player, playerData), this.plugin.getExecutor());
         } else {
-            return CompletableFuture.supplyAsync(() -> player).thenApplyAsync(this::getFromCache).exceptionally(ex -> {
-                this.plugin.getLogger().log(Level.SEVERE, String.format("Failed to retrieve PlayerData for %s from cache.", player.getName()), ex);
-                return null;
-            });
+            return CompletableFuture.supplyAsync(() -> player, this.plugin.getExecutor())
+                    .thenApplyAsync(this::getFromCache, this.plugin.getExecutor())
+                    .exceptionally(ex -> {
+                        this.plugin.getLogger().log(Level.SEVERE, String.format("Failed to retrieve PlayerData for %s from cache.", player.getName()), ex);
+                        return null;
+                    });
         }
     }
 
