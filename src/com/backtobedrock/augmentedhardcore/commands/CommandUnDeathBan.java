@@ -40,7 +40,7 @@ public class CommandUnDeathBan extends AbstractCommand {
             }
 
             this.unDeathBan();
-        }).exceptionally(ex -> {
+        }, this.plugin.getExecutor()).exceptionally(ex -> {
             this.plugin.getLogger().log(Level.SEVERE, "Error executing un-death-ban command.", ex);
             return null;
         });
@@ -53,7 +53,7 @@ public class CommandUnDeathBan extends AbstractCommand {
             } else {
                 this.cs.sendMessage(this.plugin.getMessages().getTargetNotBannedByPluginError(this.target.getName(), this.plugin.getDescription().getName()));
             }
-        }).exceptionally(e -> {
+        }, this.plugin.getExecutor()).exceptionally(e -> {
             this.plugin.getLogger().log(Level.SEVERE, "Error executing un-death-ban command.", e);
             return null;
         });

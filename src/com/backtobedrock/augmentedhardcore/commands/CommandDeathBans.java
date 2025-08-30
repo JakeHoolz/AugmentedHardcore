@@ -40,7 +40,7 @@ public class CommandDeathBans extends AbstractCommand {
                 }
 
                 this.runCommand(this.target);
-            }).exceptionally(ex -> {
+            }, this.plugin.getExecutor()).exceptionally(ex -> {
                 this.plugin.getLogger().log(Level.SEVERE, "Error executing death bans command.", ex);
                 return null;
             });
@@ -48,7 +48,7 @@ public class CommandDeathBans extends AbstractCommand {
     }
 
     private void runCommand(OfflinePlayer player) {
-        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new GuiPlayerDeathBans(playerData))).exceptionally(ex -> {
+        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new GuiPlayerDeathBans(playerData)), this.plugin.getExecutor()).exceptionally(ex -> {
             this.plugin.getLogger().log(Level.SEVERE, "Error executing death bans command.", ex);
             return null;
         });

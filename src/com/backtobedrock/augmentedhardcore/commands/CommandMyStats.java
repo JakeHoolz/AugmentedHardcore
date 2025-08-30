@@ -40,7 +40,7 @@ public class CommandMyStats extends AbstractCommand {
                 }
 
                 this.runCommand(this.target);
-            }).exceptionally(ex -> {
+            }, this.plugin.getExecutor()).exceptionally(ex -> {
                 this.plugin.getLogger().log(Level.SEVERE, "Error executing my stats command.", ex);
                 return null;
             });
@@ -48,7 +48,7 @@ public class CommandMyStats extends AbstractCommand {
     }
 
     private void runCommand(OfflinePlayer player) {
-        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new GuiMyStats(this.sender, playerData))).exceptionally(ex -> {
+        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new GuiMyStats(this.sender, playerData)), this.plugin.getExecutor()).exceptionally(ex -> {
             this.plugin.getLogger().log(Level.SEVERE, "Error executing my stats command.", ex);
             return null;
         });

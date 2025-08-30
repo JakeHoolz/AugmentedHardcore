@@ -28,7 +28,7 @@ public class CommandServerDeathBans extends AbstractCommand {
         }
 
 
-        this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> PlayerUtils.openInventory(this.sender, new GuiServerDeathBans(this.sender, serverData))).exceptionally(ex -> {
+        this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> PlayerUtils.openInventory(this.sender, new GuiServerDeathBans(this.sender, serverData)), this.plugin.getExecutor()).exceptionally(ex -> {
             this.plugin.getLogger().log(Level.SEVERE, "Error executing server death bans command.", ex);
             return null;
         });

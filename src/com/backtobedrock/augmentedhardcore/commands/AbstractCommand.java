@@ -76,7 +76,7 @@ public abstract class AbstractCommand {
             }
             this.target = player;
             return true;
-        });
+        }, this.plugin.getExecutor());
     }
 
     public void sendUsageMessage(Command command) {

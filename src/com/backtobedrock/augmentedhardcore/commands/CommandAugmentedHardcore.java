@@ -64,11 +64,11 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                         );
 
                         this.plugin.getPlayerRepository().updatePlayerData(playerData);
-                    }).exceptionally(ex -> {
+                    }, this.plugin.getExecutor()).exceptionally(ex -> {
                         this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                         return null;
                     });
-                }).exceptionally(ex -> {
+                }, this.plugin.getExecutor()).exceptionally(ex -> {
                     this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                     return null;
                 });
@@ -98,11 +98,11 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                         );
 
                         this.plugin.getPlayerRepository().updatePlayerData(playerData);
-                    }).exceptionally(ex -> {
+                    }, this.plugin.getExecutor()).exceptionally(ex -> {
                         this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                         return null;
                     });
-                }).exceptionally(ex -> {
+                }, this.plugin.getExecutor()).exceptionally(ex -> {
                     this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                     return null;
                 });
@@ -132,11 +132,11 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                         );
 
                         this.plugin.getPlayerRepository().updatePlayerData(playerData);
-                    }).exceptionally(ex -> {
+                    }, this.plugin.getExecutor()).exceptionally(ex -> {
                         this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                         return null;
                     });
-                }).exceptionally(ex -> {
+                }, this.plugin.getExecutor()).exceptionally(ex -> {
                     this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                     return null;
                 });
@@ -166,11 +166,11 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                         );
 
                         this.plugin.getPlayerRepository().updatePlayerData(playerData);
-                    }).exceptionally(ex -> {
+                    }, this.plugin.getExecutor()).exceptionally(ex -> {
                         this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                         return null;
                     });
-                }).exceptionally(ex -> {
+                }, this.plugin.getExecutor()).exceptionally(ex -> {
                     this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                     return null;
                 });
@@ -202,7 +202,7 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                             this.plugin.getMessages().getCommandAddMaxHealth(maxHealth, maxHealthRaw, maxHealthTotal, maxHealthTotalRaw),
                             this.plugin.getMessages().getCommandAddMaxHealthSuccess(this.target.getName(), maxHealth, maxHealthRaw, maxHealthTotal, maxHealthTotalRaw)
                     );
-                }).exceptionally(ex -> {
+                }, this.plugin.getExecutor()).exceptionally(ex -> {
                     this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                     return null;
                 });
@@ -232,7 +232,7 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                             this.plugin.getMessages().getCommandSetMaxHealth(maxHealth, maxHealthRaw),
                             this.plugin.getMessages().getCommandSetMaxHealthSuccess(this.target.getName(), maxHealth, maxHealthRaw)
                     );
-                }).exceptionally(ex -> {
+                }, this.plugin.getExecutor()).exceptionally(ex -> {
                     this.plugin.getLogger().log(Level.SEVERE, "Error executing AugmentedHardcore command.", ex);
                     return null;
                 });
@@ -247,8 +247,8 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                         playerData.reset();
 
                         this.cs.sendMessage(this.plugin.getMessages().getCommandResetSuccess(this.target.getName()));
-                    });
-                });
+                    }, this.plugin.getExecutor());
+                }, this.plugin.getExecutor());
                 break;
             case RELOAD:
                 this.plugin.initialize();
