@@ -4,6 +4,7 @@ import com.backtobedrock.augmentedhardcore.utilities.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.List;
+import java.util.OptionalInt;
 
 public class ConfigurationCombatTag {
     private final boolean combatTagSelf;
@@ -33,11 +34,11 @@ public class ConfigurationCombatTag {
         boolean cPlayerCombatTag = section.getBoolean("PlayerCombatTag", true);
         boolean cMonsterCombatTag = section.getBoolean("MonsterCombatTag", true);
         boolean cCombatTagSelf = section.getBoolean("CombatTagSelf", true);
-        int cCombatTagTime = ConfigUtils.checkMinMax("CombatTagTime", section.getInt("CombatTagTime", 15), 1, Integer.MAX_VALUE);
+        OptionalInt cCombatTagTime = ConfigUtils.checkMinMax("CombatTagTime", section.getInt("CombatTagTime", 15), 1, Integer.MAX_VALUE);
         boolean cCombatTagPlayerKickDeath = section.getBoolean("CombatTagPlayerKickDeath", true);
         List<String> cDisableCombatTagInWorlds = section.getStringList("DisableCombatTagInWorlds");
 
-        if (cCombatTagTime == -10) {
+        if (cCombatTagTime.isEmpty()) {
             return null;
         }
 
@@ -45,7 +46,7 @@ public class ConfigurationCombatTag {
                 cPlayerCombatTag,
                 cMonsterCombatTag,
                 cCombatTagSelf,
-                cCombatTagTime,
+                cCombatTagTime.getAsInt(),
                 cCombatTagPlayerKickDeath,
                 cDisableCombatTagInWorlds
         );

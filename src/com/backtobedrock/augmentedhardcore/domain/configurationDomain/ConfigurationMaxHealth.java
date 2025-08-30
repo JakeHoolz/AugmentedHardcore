@@ -6,6 +6,8 @@ import org.bukkit.entity.EntityType;
 
 import java.util.EnumMap;
 import java.util.List;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
 
 public class ConfigurationMaxHealth {
     private final boolean useMaxHealth;
@@ -36,14 +38,14 @@ public class ConfigurationMaxHealth {
 
     public static ConfigurationMaxHealth deserialize(ConfigurationSection section) {
         boolean cUseMaxHealth = section.getBoolean("UseMaxHealth", true);
-        double cMaxHealth = ConfigUtils.checkMinMax("MaxHealth", section.getDouble("MaxHealth", 20), 1, Double.MAX_VALUE);
-        double cMinHealth = ConfigUtils.checkMinMax("MinHealth", section.getDouble("MinHealth", 6), 1, Double.MAX_VALUE);
-        double cMaxHealthAfterBan = section.getDouble("MaxHealthAfterBan", 20) == -1 ? -1 : ConfigUtils.checkMinMax("MaxHealthAfterBan", section.getDouble("MaxHealthAfterBan", 20), -1, Double.MAX_VALUE);
-        double cMaxHealthDecreasePerDeath = ConfigUtils.checkMinMax("MaxHealthDecreasePerDeath", section.getDouble("MaxHealthDecreasePerDeath", 2), 1, Double.MAX_VALUE);
+        OptionalDouble cMaxHealth = ConfigUtils.checkMinMax("MaxHealth", section.getDouble("MaxHealth", 20), 1, Double.MAX_VALUE);
+        OptionalDouble cMinHealth = ConfigUtils.checkMinMax("MinHealth", section.getDouble("MinHealth", 6), 1, Double.MAX_VALUE);
+        OptionalDouble cMaxHealthAfterBan = section.getDouble("MaxHealthAfterBan", 20) == -1 ? OptionalDouble.of(-1) : ConfigUtils.checkMinMax("MaxHealthAfterBan", section.getDouble("MaxHealthAfterBan", 20), -1, Double.MAX_VALUE);
+        OptionalDouble cMaxHealthDecreasePerDeath = ConfigUtils.checkMinMax("MaxHealthDecreasePerDeath", section.getDouble("MaxHealthDecreasePerDeath", 2), 1, Double.MAX_VALUE);
         boolean cMaxHealthIncreaseOnKill = section.getBoolean("MaxHealthIncreaseOnKill", true);
         EnumMap<EntityType, Double> cMaxHealthIncreasePerKill = new EnumMap<>(EntityType.class);
         boolean cGetMaxHealthByPlaytime = section.getBoolean("GetMaxHealthByPlaytime", false);
-        int cPlaytimePerHalfHeart = ConfigUtils.checkMinMax("PlaytimePerHalfHeart", section.getInt("PlaytimePerHalfHeart", 30), 1, Integer.MAX_VALUE);
+        OptionalInt cPlaytimePerHalfHeart = ConfigUtils.checkMinMax("PlaytimePerHalfHeart", section.getInt("PlaytimePerHalfHeart", 30), 1, Integer.MAX_VALUE);
         List<String> cDisableLosingMaxHealthInWorlds = section.getStringList("DisableLosingMaxHealthInWorlds").stream().map(String::toLowerCase).toList();
         List<String> cDisableGainingMaxHealthInWorlds = section.getStringList("DisableGainingMaxHealthInWorlds").stream().map(String::toLowerCase).toList();
 
@@ -53,27 +55,32 @@ public class ConfigurationMaxHealth {
             maxHealthIncreasePerKillSection.getKeys(false).forEach(e -> {
                 EntityType type = ConfigUtils.getLivingEntityType("MaxHealthIncreasePerKill", e);
                 if (type != null) {
-                    double amount = ConfigUtils.checkMinMax("MaxHealthIncreasePerKill." + e, maxHealthIncreasePerKillSection.getDouble(e, 0), 0, Integer.MAX_VALUE);
-                    if (amount != -10)
-                        cMaxHealthIncreasePerKill.put(type, amount);
+                    OptionalDouble amount = ConfigUtils.checkMinMax("MaxHealthIncreasePerKill." + e, maxHealthIncreasePerKillSection.getDouble(e, 0), 0, Integer.MAX_VALUE);
+                    amount.ifPresent(a -> cMaxHealthIncreasePerKill.put(type, a));
                 }
             });
         }
 
-        if (cMaxHealth == -10 || cMinHealth == -10 || cMaxHealthAfterBan == -10 || cMaxHealthDecreasePerDeath == -10 || cPlaytimePerHalfHeart == -10) {
+        if (cMaxHealth.isEmpty() || cMinHealth.isEmpty() || cMaxHealthAfterBan.isEmpty() || cMaxHealthDecreasePerDeath.isEmpty() || cPlaytimePerHalfHeart.isEmpty()) {
             return null;
         }
 
+        double vMaxHealth = cMaxHealth.getAsDouble();
+        double vMinHealth = cMinHealth.getAsDouble();
+        double vMaxHealthAfterBan = cMaxHealthAfterBan.getAsDouble();
+        double vMaxHealthDecreasePerDeath = cMaxHealthDecreasePerDeath.getAsDouble();
+        int vPlaytimePerHalfHeart = cPlaytimePerHalfHeart.getAsInt();
+
         return new ConfigurationMaxHealth(
                 cUseMaxHealth,
-                cMaxHealth,
-                cMinHealth,
-                cMaxHealthAfterBan,
-                cMaxHealthDecreasePerDeath,
+                vMaxHealth,
+                vMinHealth,
+                vMaxHealthAfterBan,
+                vMaxHealthDecreasePerDeath,
                 cMaxHealthIncreaseOnKill,
                 cMaxHealthIncreasePerKill,
                 cGetMaxHealthByPlaytime,
-                cPlaytimePerHalfHeart * 1200,
+                vPlaytimePerHalfHeart * 1200,
                 cDisableLosingMaxHealthInWorlds,
                 cDisableGainingMaxHealthInWorlds
         );
