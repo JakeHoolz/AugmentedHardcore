@@ -187,8 +187,9 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
         }
         String[] queries = setup.split(";");
         for (String query : queries) {
+            query = query.trim();
             if (query.isEmpty()) {
-                return;
+                continue;
             }
             try (Connection conn = this.getConfigurations().getDataConfiguration().getDatabase().getDataSource().getConnection();
                  PreparedStatement stmt = conn.prepareStatement(query)) {
