@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class ServerData {
     private final AugmentedHardcore plugin;
@@ -131,7 +132,7 @@ public class ServerData {
                     playerData.resetSpectatorDeathBan(player.getPlayer());
                 }
             }).exceptionally(e -> {
-                e.printStackTrace();
+                this.plugin.getLogger().log(Level.SEVERE, "Error removing ban.", e);
                 return null;
             });
             this.plugin.getServerRepository().removeBanFromServerData(player.getUniqueId(), unban.getBan());

@@ -9,6 +9,7 @@ import org.bukkit.OfflinePlayer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class GuiRevive extends AbstractConfirmationGui {
     private final PlayerData reviverData;
@@ -24,7 +25,7 @@ public class GuiRevive extends AbstractConfirmationGui {
             this.updateInfo(true);
             this.updateConfirmation(true);
         }).exceptionally(ex -> {
-            ex.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, "Error loading revive GUI.", ex);
             return null;
         });
         this.initialize();

@@ -7,6 +7,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
+import java.util.logging.Level;
+
 public class ListenerPlayerDamageByEntity extends AbstractEventListener {
     @EventHandler
     public void onPlayerDamage(EntityDamageByEntityEvent event) {
@@ -33,7 +35,7 @@ public class ListenerPlayerDamageByEntity extends AbstractEventListener {
         Killer tagger = EventUtils.getDamageEventKiller(event);
 
         this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> playerData.onCombatTag(tagger, player)).exceptionally(ex -> {
-            ex.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, "Error handling player damage.", ex);
             return null;
         });
     }

@@ -27,7 +27,7 @@ public abstract class Patch extends AbstractMapper {
             this.success = true;
         } catch (SQLException e) {
             this.success = false;
-            e.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, "Failed to execute patch SQL.", e);
         }
     }
 
@@ -50,7 +50,7 @@ public abstract class Patch extends AbstractMapper {
             ResultSet resultSet = preparedStatement.executeQuery();
             return resultSet.next() && resultSet.getInt("c") > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, "Failed to check column existence.", e);
         }
         return false;
     }

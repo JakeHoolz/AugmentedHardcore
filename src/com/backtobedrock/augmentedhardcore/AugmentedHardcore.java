@@ -200,7 +200,6 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
             setup = new BufferedReader(new InputStreamReader(in)).lines().collect(Collectors.joining());
         } catch (IOException | NullPointerException e) {
             getLogger().log(Level.SEVERE, "Could not read db setup file.", e);
-            e.printStackTrace();
         }
         String[] queries = setup.split(";");
         for (String query : queries) {
@@ -213,7 +212,7 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
                 stmt.execute();
 
             } catch (SQLException e) {
-                e.printStackTrace();
+                getLogger().log(Level.SEVERE, "Error executing db setup query.", e);
             }
         }
 

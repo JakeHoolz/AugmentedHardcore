@@ -5,6 +5,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 
+import java.util.logging.Level;
+
 public class ListenerEntityDeath extends AbstractEventListener {
 
     @EventHandler
@@ -21,7 +23,7 @@ public class ListenerEntityDeath extends AbstractEventListener {
         Player player = (Player) entityDamageByEntityEvent.getDamager();
 
         this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> playerData.onEntityKill(event.getEntity().getType(), player)).exceptionally(ex -> {
-            ex.printStackTrace();
+            this.plugin.getLogger().log(Level.SEVERE, "Error handling entity death.", ex);
             return null;
         });
     }
