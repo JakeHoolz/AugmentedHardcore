@@ -90,4 +90,10 @@ public class Database {
         }
         return this.dataSource;
     }
+
+    public void close() {
+        if (this.dataSource != null) {
+            this.dataSource.close();
+        }
+    }
 }
