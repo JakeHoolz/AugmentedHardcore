@@ -99,6 +99,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
         }
     }
 
+    // Previously named updatePlayerDateSync; renamed for accuracy.
     private void updatePlayerDataSync(PlayerData playerData) {
         String sql = "INSERT INTO ah_player (`player_uuid`, `last_known_name`, `last_known_ip`, `last_death`, `lives`, `life_parts`, `spectator_banned`, `time_till_next_revive`, `time_till_next_life_part`, `time_till_next_max_health`)"
                 + "VALUES(?,?,?,?,?,?,?,?,?,?)"
