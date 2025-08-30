@@ -23,14 +23,13 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.javatuples.Pair;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 public class PlayerData {
-    private final AugmentedHardcore plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
+    private final AugmentedHardcore plugin;
     private final OfflinePlayer player;
     private final List<AbstractPlaytime> playtime = new ArrayList<>();
     private final Map<UUID, Map<Class<?>, IObserver>> observers;
@@ -49,22 +48,24 @@ public class PlayerData {
     private boolean spectatorBanned;
     private LocalDateTime lastDeath;
 
-    public PlayerData(OfflinePlayer player) {
+    public PlayerData(AugmentedHardcore plugin, OfflinePlayer player) {
         this(
+                plugin,
                 player,
                 null,
                 LocalDateTime.now(),
-                JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLivesAtStart(),
-                JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsAtStart(),
+                plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLivesAtStart(),
+                plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsAtStart(),
                 false,
-                JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getReviveConfiguration().isReviveOnFirstJoin() ? 0L : JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getReviveConfiguration().getTimeBetweenRevives(),
-                JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart(),
-                JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart(),
+                plugin.getConfigurations().getReviveConfiguration().isReviveOnFirstJoin() ? 0L : plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives(),
+                plugin.getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart(),
+                plugin.getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart(),
                 new TreeMap<>()
         );
     }
 
-    public PlayerData(OfflinePlayer player, String lastKnownIp, LocalDateTime lastDeath, int lives, int lifeParts, boolean spectatorBanned, long timeTillNextRevive, long timeTillNextLifePart, long timeTillNextMaxHealth, NavigableMap<Integer, Ban> bans) {
+    public PlayerData(AugmentedHardcore plugin, OfflinePlayer player, String lastKnownIp, LocalDateTime lastDeath, int lives, int lifeParts, boolean spectatorBanned, long timeTillNextRevive, long timeTillNextLifePart, long timeTillNextMaxHealth, NavigableMap<Integer, Ban> bans) {
+        this.plugin = plugin;
         this.player = player;
         this.lastDeath = lastDeath;
         this.bans = bans;
@@ -81,9 +82,7 @@ public class PlayerData {
         this.lastKnownIp = lastKnownIp;
     }
 
-    public static PlayerData deserialize(ConfigurationSection section, OfflinePlayer player) {
-        AugmentedHardcore plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
-
+    public static PlayerData deserialize(AugmentedHardcore plugin, ConfigurationSection section, OfflinePlayer player) {
         NavigableMap<Integer, Ban> cBans = new TreeMap<>();
         String cLastKnownIp = section.getString("LastKnownIp", null);
         LocalDateTime cLastDeath = LocalDateTime.parse(section.getString("LastDeath", LocalDateTime.now().toString()));
@@ -105,7 +104,7 @@ public class PlayerData {
             }
         }
 
-        return new PlayerData(player, cLastKnownIp, cLastDeath, cLives, cLifeParts, cSpectatorBanned, cTimeTillNextRevive, cTimeTillNextLifePart, cTimeTillNextMaxHealth, cBans);
+        return new PlayerData(plugin, player, cLastKnownIp, cLastDeath, cLives, cLifeParts, cSpectatorBanned, cTimeTillNextRevive, cTimeTillNextLifePart, cTimeTillNextMaxHealth, cBans);
     }
 
     public long getTimeTillNextRevive() {
@@ -882,11 +881,11 @@ public class PlayerData {
     }
 
     public void reset() {
-        this.setLives(JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLivesAtStart());
-        this.setLifeParts(JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsAtStart());
-        this.setTimeTillNextRevive(JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getReviveConfiguration().isReviveOnFirstJoin() ? 0L : JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getReviveConfiguration().getTimeBetweenRevives());
-        this.setTimeTillNextLifePart(JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart());
-        this.setTimeTillNextMaxHealth(JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart());
+        this.setLives(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLivesAtStart());
+        this.setLifeParts(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsAtStart());
+        this.setTimeTillNextRevive(this.plugin.getConfigurations().getReviveConfiguration().isReviveOnFirstJoin() ? 0L : this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives());
+        this.setTimeTillNextLifePart(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart());
+        this.setTimeTillNextMaxHealth(this.plugin.getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart());
         this.bans.clear();
         this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> serverData.getBan(this.player.getUniqueId()).finish());
         this.plugin.getPlayerRepository().deletePlayerData(this.player);
