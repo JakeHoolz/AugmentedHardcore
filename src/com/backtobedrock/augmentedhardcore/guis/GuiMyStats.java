@@ -73,7 +73,7 @@ public class GuiMyStats extends AbstractGui {
             Map<String, String> placeholders = new HashMap<String, String>() {{
                 put("max_health", Double.toString(plugin.getConfigurations().getMaxHealthConfiguration().getMaxHealth()));
                 put("min_health", Double.toString(plugin.getConfigurations().getMaxHealthConfiguration().getMinHealth()));
-                put("current_max_health", playerData.getPlayer().getPlayer() == null ? "-" : Double.toString(playerData.getPlayer().getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue()));
+                put("current_max_health", playerData.getPlayer().getPlayer() == null ? "-" : Double.toString(playerData.getPlayer().getPlayer().getAttribute(Attribute.MAX_HEALTH).getBaseValue()));
                 put("time_till_next_max_health_long", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextMaxHealth(), TimePattern.LONG));
                 put("time_till_next_max_health_short", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextMaxHealth(), TimePattern.SHORT));
                 put("time_till_next_max_health_digital", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextMaxHealth(), TimePattern.DIGITAL));

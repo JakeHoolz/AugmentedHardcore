@@ -64,8 +64,8 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
 
         //bstats metrics
         Metrics metrics = new Metrics(this, 10843);
-        metrics.addCustomChart(new Metrics.SingleLineChart("currently_ongoing_death_bans", () -> this.serverRepository.getServerDataSync().getTotalOngoingBans()));
-        metrics.addCustomChart(new Metrics.SingleLineChart("total_death_bans", () -> this.serverRepository.getServerDataSync().getTotalDeathBans()));
+        metrics.addCustomChart(new Metrics.SingleLineChart("currently_ongoing_death_bans", () -> (Integer) this.serverRepository.getServerDataSync().getTotalOngoingBans()));
+        metrics.addCustomChart(new Metrics.SingleLineChart("total_death_bans", () -> (Integer) this.serverRepository.getServerDataSync().getTotalDeathBans()));
 
         //PAPI
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {

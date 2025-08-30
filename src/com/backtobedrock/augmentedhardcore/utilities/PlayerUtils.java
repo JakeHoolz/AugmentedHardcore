@@ -18,7 +18,7 @@ public class PlayerUtils {
 
     public static void setMaxHealth(Player player, double rawAmount) {
         AugmentedHardcore plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
-        AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        AttributeInstance attribute = player.getAttribute(Attribute.MAX_HEALTH);
         if (attribute != null) {
             if (plugin.getConfigurations().getMaxHealthConfiguration().isUseMaxHealth()) {
                 rawAmount = Math.max(Math.min(rawAmount, plugin.getConfigurations().getMaxHealthConfiguration().getMaxHealth()), plugin.getConfigurations().getMaxHealthConfiguration().getMinHealth());
@@ -37,7 +37,7 @@ public class PlayerUtils {
     }
 
     public static double getMaxHealth(Player player) {
-        AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        AttributeInstance attribute = player.getAttribute(Attribute.MAX_HEALTH);
         if (attribute != null) {
             return attribute.getBaseValue();
         }

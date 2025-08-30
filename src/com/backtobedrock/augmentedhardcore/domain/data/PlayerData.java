@@ -438,33 +438,59 @@ public class PlayerData {
     }
 
     public void onCombatTag(Killer tagger, Player player) {
-        if (this.isSpectatorBanned()) {
+        // 1) Spectator or disabled → do nothing
+        if (isSpectatorBanned()) return;
+        if (!plugin.getConfigurations().getCombatTagConfiguration().isUseCombatTag()) return;
+
+        // 2) Null or self-tagging disabled → do nothing
+        if (tagger == null) return;
+        if (!plugin.getConfigurations().getCombatTagConfiguration().isCombatTagSelf()
+                && tagger.getName().equals(player.getName())) return;
+
+        // 3) Disabled world → do nothing
+        String worldName = player.getWorld().getName().toLowerCase();
+        if (plugin.getConfigurations().getCombatTagConfiguration()
+                .getDisableCombatTagInWorlds()
+                .contains(worldName)) {
             return;
         }
 
-        if (!this.plugin.getConfigurations().getCombatTagConfiguration().isUseCombatTag()) {
-            return;
+        // 4) Make sure our list exists
+        if (combatTag == null) {
+            combatTag = new ArrayList<>();
         }
 
-        if (tagger == null) {
-            return;
+        // 5) If we already have tags, restart them—filtering out and logging any nulls
+        if (!combatTag.isEmpty()) {
+            Iterator<AbstractCombatTag> it = combatTag.iterator();
+            while (it.hasNext()) {
+                AbstractCombatTag tag = it.next();
+                if (tag != null) {
+                    tag.restart(tagger);
+                } else {
+                    plugin.getLogger().warning(
+                            "[CombatTag] Found and removed null entry for player " + player.getName()
+                    );
+                    it.remove();
+                }
+            }
         }
-
-        //check if combat tag self enabled and if self harming
-        if (!this.plugin.getConfigurations().getCombatTagConfiguration().isCombatTagSelf() && tagger.getName().equals(this.player.getName())) {
-            return;
-        }
-
-        //check if in disabled worlds
-        if (this.plugin.getConfigurations().getCombatTagConfiguration().getDisableCombatTagInWorlds().contains(player.getWorld().getName().toLowerCase())) {
-            return;
-        }
-
-        if (!this.combatTag.isEmpty()) {
-            this.combatTag.forEach(e -> e.restart(tagger));
-        } else {
-            this.combatTag = this.plugin.getMessages().getCombatTagNotificationsConfiguration(player, this, tagger);
-            this.combatTag.forEach(AbstractCombatTag::start);
+        // 6) Otherwise, create and start new tags
+        else {
+            combatTag = plugin.getMessages()
+                    .getCombatTagNotificationsConfiguration(player, this, tagger);
+            Iterator<AbstractCombatTag> it = combatTag.iterator();
+            while (it.hasNext()) {
+                AbstractCombatTag tag = it.next();
+                if (tag != null) {
+                    tag.start();
+                } else {
+                    plugin.getLogger().warning(
+                            "[CombatTag] Dropped null new‐tag for player " + player.getName()
+                    );
+                    it.remove();
+                }
+            }
         }
     }
 
