@@ -57,8 +57,8 @@ public class CommandLives extends AbstractCommand {
         this.cs.sendMessage(
                 this.plugin.getMessages().getCommandLivesLeft(
                         playerData.getPlayer().getName(),
-                        playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"),
-                        Integer.toString(playerData.getLives())
+                        playerData.getLifeManager().getLives() + (playerData.getLifeManager().getLives() == 1 ? " life" : " lives"),
+                        Integer.toString(playerData.getLifeManager().getLives())
                 ));
     }
 }

@@ -35,17 +35,14 @@ public class PlayerData {
     private final List<AbstractPlaytime> playtime = new ArrayList<>();
     private final Map<UUID, Map<Class<?>, IObserver>> observers;
     private final String lastKnownIp;
-    private final NavigableMap<Integer, Ban> bans;
+    private final BanManager banManager;
+    private final LifeManager lifeManager;
+    private final PlaytimeTracker playtimeTracker;
     private List<AbstractCombatTag> combatTag = new ArrayList<>();
     private boolean kicked = false;
     private boolean combatLogged = false;
     private Killer combatTagger;
     private Killer reviving;
-    private int lives;
-    private int lifeParts;
-    private long timeTillNextRevive;
-    private long timeTillNextLifePart;
-    private long timeTillNextMaxHealth;
     private boolean spectatorBanned;
     private LocalDateTime lastDeath;
 
@@ -69,14 +66,11 @@ public class PlayerData {
         this.plugin = plugin;
         this.player = player;
         this.lastDeath = lastDeath;
-        this.bans = bans;
         this.observers = new HashMap<>();
         this.spectatorBanned = spectatorBanned;
-        this.setTimeTillNextLifePart(timeTillNextLifePart);
-        this.setTimeTillNextMaxHealth(timeTillNextMaxHealth);
-        this.setTimeTillNextRevive(timeTillNextRevive);
-        this.setLives(lives);
-        this.setLifeParts(lifeParts);
+        this.lifeManager = new LifeManager(plugin, lives, lifeParts);
+        this.playtimeTracker = new PlaytimeTracker(plugin, this, timeTillNextRevive, timeTillNextLifePart, timeTillNextMaxHealth);
+        this.banManager = new BanManager(bans);
         if (player.getPlayer() != null) {
             lastKnownIp = PlayerUtils.getPlayerIP(player.getPlayer());
         }
@@ -108,12 +102,16 @@ public class PlayerData {
         return new PlayerData(plugin, player, cLastKnownIp, cLastDeath, cLives, cLifeParts, cSpectatorBanned, cTimeTillNextRevive, cTimeTillNextLifePart, cTimeTillNextMaxHealth, cBans);
     }
 
+    public PlaytimeTracker getPlaytimeTracker() {
+        return this.playtimeTracker;
+    }
+
     public long getTimeTillNextRevive() {
-        return timeTillNextRevive;
+        return this.playtimeTracker.getTimeTillNextRevive();
     }
 
     private void setTimeTillNextRevive(long timeTillNextRevive) {
-        this.timeTillNextRevive = Math.max(0, Math.min(timeTillNextRevive, this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives()));
+        this.playtimeTracker.setTimeTillNextRevive(timeTillNextRevive);
         this.observers.forEach((key, value) -> value.get(MyStatsTimeTillNextReviveObserver.class).update());
     }
 
@@ -121,12 +119,20 @@ public class PlayerData {
         return this.lastKnownIp;
     }
 
+    public LifeManager getLifeManager() {
+        return this.lifeManager;
+    }
+
+    public BanManager getBanManager() {
+        return this.banManager;
+    }
+
     public int getLives() {
-        return lives;
+        return this.lifeManager.getLives();
     }
 
     public void setLives(int lives) {
-        this.lives = Math.max(0, Math.min(lives, this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getMaxLives()));
+        this.lifeManager.setLives(lives);
         this.observers.forEach((key, value) -> value.get(MyStatsLivesObserver.class).update());
     }
 
@@ -135,41 +141,40 @@ public class PlayerData {
     }
 
     public int getLifeParts() {
-        return lifeParts;
+        return this.lifeManager.getLifeParts();
     }
 
     public void setLifeParts(int lifeParts) {
-        int lifePartsPerLife = this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsPerLife();
-        int lives = Math.min(lifeParts / lifePartsPerLife, this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getMaxLives() - this.getLives());
-        if (lives > 0) {
-            this.increaseLives(lives);
-        }
-        this.lifeParts = Math.min(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getMaxLifeParts(), Math.max(0, lifeParts - (lives * lifePartsPerLife)));
+        this.lifeManager.setLifeParts(lifeParts);
         this.observers.forEach((key, value) -> value.get(MyStatsLifePartsObserver.class).update());
     }
 
     public NavigableMap<Integer, Ban> getBans() {
-        return bans;
+        return this.banManager.getBans();
     }
 
     public int getBanCount() {
-        return this.bans.size();
+        return this.banManager.getBanCount();
     }
 
     private void decreaseLives(int amount) {
-        this.setLives(this.getLives() - amount);
+        this.lifeManager.decreaseLives(amount);
+        this.observers.forEach((key, value) -> value.get(MyStatsLivesObserver.class).update());
     }
 
     public void increaseLives(int amount) {
-        this.setLives(this.getLives() + amount);
+        this.lifeManager.increaseLives(amount);
+        this.observers.forEach((key, value) -> value.get(MyStatsLivesObserver.class).update());
     }
 
     private void decreaseLifeParts(int amount) {
-        this.setLifeParts(this.getLifeParts() - amount);
+        this.lifeManager.decreaseLifeParts(amount);
+        this.observers.forEach((key, value) -> value.get(MyStatsLifePartsObserver.class).update());
     }
 
     public void increaseLifeParts(int amount) {
-        this.setLifeParts(this.getLifeParts() + amount);
+        this.lifeManager.increaseLifeParts(amount);
+        this.observers.forEach((key, value) -> value.get(MyStatsLifePartsObserver.class).update());
     }
 
     public void onDeath(PlayerDeathEvent event, Player player) {
@@ -190,7 +195,7 @@ public class PlayerData {
         this.loseMaxHealth(this.plugin.getConfigurations().getMaxHealthConfiguration().getMaxHealthDecreasePerDeath(), player);
 
         if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isUseLives()) {
-            if (this.lives == 0) {
+            if (this.getLives() == 0) {
                 this.loseLifeParts(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsLostPerDeathBan(), player);
                 this.ban(event, player);
             } else {
@@ -338,10 +343,9 @@ public class PlayerData {
     }
 
     private Pair<Integer, Ban> addBan(Ban ban) {
-        int key = (this.bans.isEmpty() ? 0 : this.bans.lastKey()) + 1;
-        this.bans.put(key, ban);
+        Pair<Integer, Ban> pair = this.banManager.addBan(ban);
         this.observers.forEach((k, value) -> value.get(MyStatsDeathBansObserver.class).update());
-        return new Pair<>(key, ban);
+        return pair;
     }
 
     public void onRespawn(Player player) {
@@ -350,7 +354,7 @@ public class PlayerData {
         }
 
         if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isUseLives()) {
-            if (this.lives != 0) {
+            if (this.getLives() != 0) {
                 return;
             }
 
@@ -565,96 +569,26 @@ public class PlayerData {
     }
 
     public void decreaseTimeTillNextLifePart(int amount, Player player) {
-        if (this.isSpectatorBanned()) {
-            return;
-        }
-
-        if (!this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isUseLifeParts()) {
-            return;
-        }
-
-        if (!this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isGetLifePartsByPlaytime()) {
-            return;
-        }
-
-        if (player.hasPermission(Permission.BYPASS_GAINLIFEPARTS_PLAYTIME.getPermissionString())) {
-            return;
-        }
-
-        if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getDisableGainingLifePartsInWorlds().contains(player.getWorld().getName().toLowerCase())) {
-            return;
-        }
-
-        if (this.lifeParts >= this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getMaxLifeParts()) {
-            return;
-        }
-
-        long decreased = this.getTimeTillNextLifePart() - amount;
-        if (decreased <= 0) {
-            this.gainLifeParts(1, player);
-            this.setTimeTillNextLifePart(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart() - Math.abs(decreased));
-        } else {
-            this.setTimeTillNextLifePart(decreased);
-        }
+        this.playtimeTracker.decreaseTimeTillNextLifePart(amount, player);
+        this.observers.forEach((key, value) -> value.get(MyStatsTimeTillNextLifePartObserver.class).update());
     }
 
     public void decreaseTimeTillNextMaxHealth(int amount, Player player) {
-        if (this.isSpectatorBanned()) {
-            return;
-        }
-
-        if (!this.plugin.getConfigurations().getMaxHealthConfiguration().isUseMaxHealth()) {
-            return;
-        }
-
-        if (!this.plugin.getConfigurations().getMaxHealthConfiguration().isGetMaxHealthByPlaytime()) {
-            return;
-        }
-
-        if (player.hasPermission(Permission.BYPASS_GAINMAXHEALTH_PLAYTIME.getPermissionString())) {
-            return;
-        }
-
-        if (this.plugin.getConfigurations().getMaxHealthConfiguration().getDisableGainingMaxHealthInWorlds().contains(player.getWorld().getName().toLowerCase())) {
-            return;
-        }
-
-        double value = PlayerUtils.getMaxHealth(player);
-        if (value >= this.plugin.getConfigurations().getMaxHealthConfiguration().getMaxHealth()) {
-            return;
-        }
-
-        long decreased = this.getTimeTillNextMaxHealth() - amount;
-        if (decreased <= 0) {
-            this.gainMaxHealth(1D, player);
-            this.setTimeTillNextMaxHealth(this.plugin.getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart() - Math.abs(decreased));
-        } else {
-            this.setTimeTillNextMaxHealth(decreased);
-        }
+        this.playtimeTracker.decreaseTimeTillNextMaxHealth(amount, player);
+        this.observers.forEach((key, value) -> value.get(MyStatsTimeTillNextMaxHealthObserver.class).update());
     }
 
     public void decreaseTimeTillNextRevive(int amount) {
-        if (this.isSpectatorBanned()) {
-            return;
-        }
-
-        if (!this.plugin.getConfigurations().getReviveConfiguration().isUseRevive()) {
-            return;
-        }
-
-        if (this.timeTillNextRevive == 0) {
-            return;
-        }
-
-        this.setTimeTillNextRevive(this.getTimeTillNextRevive() - amount);
+        this.playtimeTracker.decreaseTimeTillNextRevive(amount);
+        this.observers.forEach((key, value) -> value.get(MyStatsTimeTillNextReviveObserver.class).update());
     }
 
     public long getTimeTillNextMaxHealth() {
-        return this.timeTillNextMaxHealth;
+        return this.playtimeTracker.getTimeTillNextMaxHealth();
     }
 
     private void setTimeTillNextMaxHealth(long timeTillNextMaxHealth) {
-        this.timeTillNextMaxHealth = Math.max(0, Math.min(timeTillNextMaxHealth, this.plugin.getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart()));
+        this.playtimeTracker.setTimeTillNextMaxHealth(timeTillNextMaxHealth);
         this.observers.forEach((key, value) -> value.get(MyStatsTimeTillNextMaxHealthObserver.class).update());
     }
 
@@ -771,7 +705,7 @@ public class PlayerData {
         }
 
         //check if revive on cooldown
-        if (this.timeTillNextRevive > 0 && !player.hasPermission(Permission.BYPASS_REVIVECOOLDOWN.getPermissionString())) {
+        if (this.getTimeTillNextRevive() > 0 && !player.hasPermission(Permission.BYPASS_REVIVECOOLDOWN.getPermissionString())) {
             player.sendMessage(String.format("§cYou cannot revive %s for another %s.", reviving.getName(), MessageUtils.getTimeFromTicks(this.getTimeTillNextRevive(), TimePattern.LONG)));
             return false;
         }
@@ -794,11 +728,11 @@ public class PlayerData {
     }
 
     public long getTimeTillNextLifePart() {
-        return timeTillNextLifePart;
+        return this.playtimeTracker.getTimeTillNextLifePart();
     }
 
     private void setTimeTillNextLifePart(long timeTillNextLifePart) {
-        this.timeTillNextLifePart = Math.max(0, Math.min(timeTillNextLifePart, this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart()));
+        this.playtimeTracker.setTimeTillNextLifePart(timeTillNextLifePart);
         this.observers.forEach((key, value) -> value.get(MyStatsTimeTillNextLifePartObserver.class).update());
     }
 
@@ -810,15 +744,15 @@ public class PlayerData {
         Map<String, Object> map = new HashMap<>();
 
         Map<Object, Object> cBans = new HashMap<>();
-        this.bans.forEach((key, value) -> cBans.put(key, value.serialize()));
+        this.banManager.getBans().forEach((key, value) -> cBans.put(key, value.serialize()));
 
         map.put("Bans", cBans);
-        map.put("TimeTillNextMaxHealth", this.timeTillNextMaxHealth);
-        map.put("TimeTillNextLifePart", this.timeTillNextLifePart);
+        map.put("TimeTillNextMaxHealth", this.getTimeTillNextMaxHealth());
+        map.put("TimeTillNextLifePart", this.getTimeTillNextLifePart());
         map.put("SpectatorBanned", this.spectatorBanned);
-        map.put("TimeTillNextRevive", this.timeTillNextRevive);
-        map.put("LifeParts", this.lifeParts);
-        map.put("Lives", this.lives);
+        map.put("TimeTillNextRevive", this.getTimeTillNextRevive());
+        map.put("LifeParts", this.getLifeParts());
+        map.put("Lives", this.getLives());
         map.put("LastDeath", this.lastDeath.toString());
         map.put("LastKnownIp", this.lastKnownIp);
         map.put("LastKnownName", this.player.getName());
@@ -843,11 +777,7 @@ public class PlayerData {
     }
 
     public Ban getLastDeathBan() {
-        Map.Entry<Integer, Ban> entry = this.bans.lastEntry();
-        if (entry != null) {
-            return entry.getValue();
-        }
-        return null;
+        return this.banManager.getLastDeathBan();
     }
 
     public void registerObserver(Player player, AbstractGui gui) {
@@ -887,7 +817,7 @@ public class PlayerData {
         this.setTimeTillNextRevive(this.plugin.getConfigurations().getReviveConfiguration().isReviveOnFirstJoin() ? 0L : this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives());
         this.setTimeTillNextLifePart(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart());
         this.setTimeTillNextMaxHealth(this.plugin.getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart());
-        this.bans.clear();
+        this.banManager.getBans().clear();
         this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> serverData.getBan(this.player.getUniqueId()).finish());
         this.plugin.getPlayerRepository().deletePlayerData(this.player);
         this.plugin.getPlayerRepository().updatePlayerData(this);
