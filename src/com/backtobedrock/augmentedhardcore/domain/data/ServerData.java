@@ -11,22 +11,36 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.javatuples.Pair;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
+/**
+ * Thread-safe container for server-wide ban information. Data is backed by concurrent collections
+ * so that asynchronous tasks can query and modify bans safely. Callers should use the exposed
+ * methods rather than mutating the returned maps directly.
+ */
 public class ServerData {
     private final AugmentedHardcore plugin;
 
     //serializable
     private final Server server;
-    private final Map<UUID, Unban> ongoingBans = new HashMap<>();
-    private final Map<String, Ban> ongoingIPBans = new HashMap<>();
+    /**
+     * Tracks all active bans. Backed by a {@link ConcurrentHashMap} to allow concurrent
+     * access from asynchronous tasks.
+     */
+    private final Map<UUID, Unban> ongoingBans = new ConcurrentHashMap<>();
+    /**
+     * Tracks all active IP bans. Backed by a {@link ConcurrentHashMap} for thread-safety.
+     */
+    private final Map<String, Ban> ongoingIPBans = new ConcurrentHashMap<>();
     private int totalDeathBans;
 
     public ServerData() {
-        this(0, new HashMap<>());
+        this(0, new ConcurrentHashMap<>());
     }
 
     public ServerData(int totalDeathBans, Map<UUID, Pair<Integer, Ban>> ongoingBans) {
@@ -159,7 +173,7 @@ public class ServerData {
     }
 
     public Map<UUID, Unban> getOngoingBans() {
-        return ongoingBans;
+        return Collections.unmodifiableMap(ongoingBans);
     }
 
     public Server getServer() {
@@ -167,6 +181,6 @@ public class ServerData {
     }
 
     public Map<String, Ban> getOngoingIPBans() {
-        return ongoingIPBans;
+        return Collections.unmodifiableMap(ongoingIPBans);
     }
 }
