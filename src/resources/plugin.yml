@@ -8,7 +8,6 @@ description: A very customizable and lightweight plugin that enhances the hardco
 api-version: 1.13
 softdepend: [ PlaceholderAPI, CombatLogX ]
 libraries:
-  - org.javatuples:javatuples:1.2
   - com.zaxxer:HikariCP:4.0.3
 commands:
   augmentedhardcore:

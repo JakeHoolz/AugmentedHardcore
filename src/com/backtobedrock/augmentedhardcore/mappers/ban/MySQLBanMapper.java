@@ -2,12 +2,12 @@ package com.backtobedrock.augmentedhardcore.mappers.ban;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
+import com.backtobedrock.augmentedhardcore.domain.BanEntry;
 import com.backtobedrock.augmentedhardcore.domain.Killer;
 import com.backtobedrock.augmentedhardcore.domain.Location;
 import com.backtobedrock.augmentedhardcore.mappers.AbstractMapper;
 import com.backtobedrock.augmentedhardcore.utilities.ConfigUtils;
 import org.bukkit.Server;
-import org.javatuples.Pair;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -21,10 +21,10 @@ public class MySQLBanMapper extends AbstractMapper implements IBanMapper {
         super(plugin);
     }
 
-    public Pair<Integer, Ban> getBanFromResultSetSync(ResultSet resultSet) {
+    public BanEntry getBanFromResultSetSync(ResultSet resultSet) {
         try {
             if (resultSet.getObject("ban_id") != null) {
-                return new Pair<>(resultSet.getInt("ban_id"),
+                return new BanEntry(resultSet.getInt("ban_id"),
                         new Ban(
                                 resultSet.getTimestamp("start_date").toLocalDateTime(),
                                 resultSet.getTimestamp("expiration_date").toLocalDateTime(),
@@ -47,12 +47,12 @@ public class MySQLBanMapper extends AbstractMapper implements IBanMapper {
     }
 
     @Override
-    public void insertBan(Server server, UUID uuid, Pair<Integer, Ban> ban) {
+    public void insertBan(Server server, UUID uuid, BanEntry ban) {
         this.updateBan(server, uuid, ban);
     }
 
     @Override
-    public void updateBan(Server server, UUID uuid, Pair<Integer, Ban> ban) {
+    public void updateBan(Server server, UUID uuid, BanEntry ban) {
         CompletableFuture.runAsync(() -> {
             String sql = "INSERT INTO ah_ban (`ban_id`,`player_uuid`,`server_ip`,`server_port`,`start_date`,`expiration_date`,`ban_time`,`damage_cause`,`damage_cause_type`,`world`,`x`,`y`,`z`,`has_killer`,`killer_name`,`killer_display_name`,`killer_entity_type`,`in_combat`,`in_combat_with_name`,`in_combat_with_display_name`,`in_combat_with_entity_type`,`death_message`,`time_since_previous_death_ban`,`time_since_previous_death`)"
                     + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
@@ -93,34 +93,34 @@ public class MySQLBanMapper extends AbstractMapper implements IBanMapper {
         });
     }
 
-    private void bindBanParameters(PreparedStatement preparedStatement, int startIndex, Server server, UUID uuid, Pair<Integer, Ban> ban) throws SQLException, UnknownHostException {
+    private void bindBanParameters(PreparedStatement preparedStatement, int startIndex, Server server, UUID uuid, BanEntry ban) throws SQLException, UnknownHostException {
         int index = startIndex;
         if (startIndex == 1) {
-            preparedStatement.setInt(index++, ban.getValue0());
+            preparedStatement.setInt(index++, ban.id());
             preparedStatement.setString(index++, uuid.toString());
         }
         preparedStatement.setString(index++, server != null ? InetAddress.getLocalHost().getHostAddress() : null);
         preparedStatement.setObject(index++, server != null ? this.plugin.getServer().getPort() : null);
-        preparedStatement.setTimestamp(index++, Timestamp.valueOf(ban.getValue1().getStartDate()));
-        preparedStatement.setTimestamp(index++, Timestamp.valueOf(ban.getValue1().getExpirationDate()));
-        preparedStatement.setInt(index++, ban.getValue1().getBanTime());
-        preparedStatement.setString(index++, ban.getValue1().getDamageCause().name());
-        preparedStatement.setString(index++, ban.getValue1().getDamageCauseType().name());
-        preparedStatement.setString(index++, ban.getValue1().getLocation().getWorld());
-        preparedStatement.setDouble(index++, ban.getValue1().getLocation().getX());
-        preparedStatement.setDouble(index++, ban.getValue1().getLocation().getY());
-        preparedStatement.setDouble(index++, ban.getValue1().getLocation().getZ());
-        preparedStatement.setBoolean(index++, ban.getValue1().getKiller() != null);
-        preparedStatement.setString(index++, ban.getValue1().getKiller() == null ? null : ban.getValue1().getKiller().getName());
-        preparedStatement.setString(index++, ban.getValue1().getKiller() == null ? null : ban.getValue1().getKiller().getDisplayName());
-        preparedStatement.setString(index++, ban.getValue1().getKiller() == null ? null : ban.getValue1().getKiller().getType().name());
-        preparedStatement.setBoolean(index++, ban.getValue1().getInCombatWith() != null);
-        preparedStatement.setString(index++, ban.getValue1().getInCombatWith() == null ? null : ban.getValue1().getInCombatWith().getName());
-        preparedStatement.setString(index++, ban.getValue1().getInCombatWith() == null ? null : ban.getValue1().getInCombatWith().getDisplayName());
-        preparedStatement.setString(index++, ban.getValue1().getInCombatWith() == null ? null : ban.getValue1().getInCombatWith().getType().name());
-        preparedStatement.setString(index++, ban.getValue1().getDeathMessage());
-        preparedStatement.setLong(index++, ban.getValue1().getTimeSincePreviousDeathBan());
-        preparedStatement.setLong(index, ban.getValue1().getTimeSincePreviousDeath());
+        preparedStatement.setTimestamp(index++, Timestamp.valueOf(ban.ban().getStartDate()));
+        preparedStatement.setTimestamp(index++, Timestamp.valueOf(ban.ban().getExpirationDate()));
+        preparedStatement.setInt(index++, ban.ban().getBanTime());
+        preparedStatement.setString(index++, ban.ban().getDamageCause().name());
+        preparedStatement.setString(index++, ban.ban().getDamageCauseType().name());
+        preparedStatement.setString(index++, ban.ban().getLocation().getWorld());
+        preparedStatement.setDouble(index++, ban.ban().getLocation().getX());
+        preparedStatement.setDouble(index++, ban.ban().getLocation().getY());
+        preparedStatement.setDouble(index++, ban.ban().getLocation().getZ());
+        preparedStatement.setBoolean(index++, ban.ban().getKiller() != null);
+        preparedStatement.setString(index++, ban.ban().getKiller() == null ? null : ban.ban().getKiller().getName());
+        preparedStatement.setString(index++, ban.ban().getKiller() == null ? null : ban.ban().getKiller().getDisplayName());
+        preparedStatement.setString(index++, ban.ban().getKiller() == null ? null : ban.ban().getKiller().getType().name());
+        preparedStatement.setBoolean(index++, ban.ban().getInCombatWith() != null);
+        preparedStatement.setString(index++, ban.ban().getInCombatWith() == null ? null : ban.ban().getInCombatWith().getName());
+        preparedStatement.setString(index++, ban.ban().getInCombatWith() == null ? null : ban.ban().getInCombatWith().getDisplayName());
+        preparedStatement.setString(index++, ban.ban().getInCombatWith() == null ? null : ban.ban().getInCombatWith().getType().name());
+        preparedStatement.setString(index++, ban.ban().getDeathMessage());
+        preparedStatement.setLong(index++, ban.ban().getTimeSincePreviousDeathBan());
+        preparedStatement.setLong(index, ban.ban().getTimeSincePreviousDeath());
     }
 
     @Override

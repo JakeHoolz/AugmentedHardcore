@@ -8,7 +8,6 @@ import com.backtobedrock.augmentedhardcore.utilities.InventoryUtils;
 import com.backtobedrock.augmentedhardcore.utilities.MessageUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Statistic;
-import org.javatuples.Pair;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -22,7 +21,7 @@ public class GuiPlayerDeathBans extends AbstractDeathBansGui {
 
     public GuiPlayerDeathBans(AugmentedHardcore plugin, PlayerData playerData) {
         super(plugin, String.format("%s Death Bans", playerData.getPlayer().getName()), playerData.getBanManager().getBanCount());
-        playerData.getBanManager().getBans().forEach((key, value) -> this.bans.put(new Pair<>(playerData.getPlayer(), key), value));
+        playerData.getBanManager().getBans().forEach((key, value) -> this.bans.put(Map.entry(playerData.getPlayer(), key), value));
         this.playerData = playerData;
         this.initialize();
     }

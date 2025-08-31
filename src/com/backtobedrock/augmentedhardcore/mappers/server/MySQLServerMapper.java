@@ -1,13 +1,12 @@
 package com.backtobedrock.augmentedhardcore.mappers.server;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
-import com.backtobedrock.augmentedhardcore.domain.Ban;
+import com.backtobedrock.augmentedhardcore.domain.BanEntry;
 import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
 import com.backtobedrock.augmentedhardcore.mappers.AbstractMapper;
 import com.backtobedrock.augmentedhardcore.mappers.ban.MySQLBanMapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
-import org.javatuples.Pair;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -55,13 +54,13 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
                 preparedStatement.setString(1, InetAddress.getLocalHost().getHostAddress());
                 preparedStatement.setInt(2, server.getPort());
                 ResultSet resultSet = preparedStatement.executeQuery();
-                Map<UUID, Pair<Integer, Ban>> deathBans = new HashMap<>();
+                Map<UUID, BanEntry> deathBans = new HashMap<>();
                 int totalDeathBans = 0;
                 while (resultSet.next()) {
                     totalDeathBans = resultSet.getInt("total_death_bans");
                     String uuidString = resultSet.getString("player_uuid");
                     if (uuidString != null && !uuidString.isEmpty()) {
-                        Pair<Integer, Ban> banPair = this.banMapper.getBanFromResultSetSync(resultSet);
+                        BanEntry banPair = this.banMapper.getBanFromResultSetSync(resultSet);
                         if (banPair != null) {
                             deathBans.put(UUID.fromString(uuidString), banPair);
                         }
@@ -119,7 +118,7 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
     }
 
     @Override
-    public void deleteBanFromServerData(UUID uuid, Pair<Integer, Ban> ban) {
+    public void deleteBanFromServerData(UUID uuid, BanEntry ban) {
         this.banMapper.updateBan(null, uuid, ban);
     }
 }
