@@ -3,6 +3,7 @@ package com.backtobedrock.augmentedhardcore.domain.data;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
 import org.javatuples.Pair;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -23,7 +24,7 @@ public class BanManager {
     }
 
     public NavigableMap<Integer, Ban> getBans() {
-        return bans;
+        return Collections.unmodifiableNavigableMap(this.bans);
     }
 
     public int getBanCount() {
@@ -34,6 +35,10 @@ public class BanManager {
         int key = (bans.isEmpty() ? 0 : bans.lastKey()) + 1;
         bans.put(key, ban);
         return new Pair<>(key, ban);
+    }
+
+    public void clearBans() {
+        this.bans.clear();
     }
 
     public Ban getLastDeathBan() {
