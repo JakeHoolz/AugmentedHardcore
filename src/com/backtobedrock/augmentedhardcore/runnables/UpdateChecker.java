@@ -1,13 +1,14 @@
 package com.backtobedrock.augmentedhardcore.runnables;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 import java.util.logging.Level;
 
@@ -34,13 +35,19 @@ public class UpdateChecker extends BukkitRunnable {
     }
 
     public void check() {
-        try (InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + 71483).openStream(); Scanner scanner = new Scanner(inputStream)) {
-            if (scanner.hasNext()) {
-                this.newestVersion = scanner.next();
-                this.outdated = !this.plugin.getDescription().getVersion().equalsIgnoreCase(this.newestVersion);
+        try {
+            URLConnection connection = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + 71483).openConnection();
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+            try (InputStream inputStream = connection.getInputStream();
+                 Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8)) {
+                if (scanner.hasNext()) {
+                    this.newestVersion = scanner.next();
+                    this.outdated = !this.plugin.getDescription().getVersion().equalsIgnoreCase(this.newestVersion);
+                }
             }
         } catch (IOException exception) {
-            Bukkit.getLogger().log(Level.INFO, "Cannot look for updates: {0}", exception.getMessage());
+            this.plugin.getLogger().log(Level.WARNING, "Cannot look for updates: {0}", exception.getMessage());
         }
     }
 
