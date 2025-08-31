@@ -4,7 +4,6 @@ import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.utilities.MessageUtils;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.javatuples.Pair;
 
@@ -17,8 +16,8 @@ public class Unban extends BukkitRunnable {
     private final OfflinePlayer player;
     private final Pair<Integer, Ban> ban;
 
-    public Unban(OfflinePlayer player, Pair<Integer, Ban> ban) {
-        this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
+    public Unban(AugmentedHardcore plugin, OfflinePlayer player, Pair<Integer, Ban> ban) {
+        this.plugin = plugin;
         this.player = player;
         this.ban = ban;
     }

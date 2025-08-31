@@ -26,6 +26,7 @@ public class MySQLBanMapper extends AbstractMapper implements IBanMapper {
             if (resultSet.getObject("ban_id") != null) {
                 return new Pair<>(resultSet.getInt("ban_id"),
                         new Ban(
+                                this.plugin,
                                 resultSet.getTimestamp("start_date").toLocalDateTime(),
                                 resultSet.getTimestamp("expiration_date").toLocalDateTime(),
                                 resultSet.getInt("ban_time"),

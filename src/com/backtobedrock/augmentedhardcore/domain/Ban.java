@@ -8,7 +8,6 @@ import com.backtobedrock.augmentedhardcore.domain.enums.TimePattern;
 import com.backtobedrock.augmentedhardcore.utilities.ConfigUtils;
 import com.backtobedrock.augmentedhardcore.utilities.MessageUtils;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -32,8 +31,8 @@ public class Ban {
     private final long timeSincePreviousDeath;
     private LocalDateTime expirationDate;
 
-    public Ban(LocalDateTime startDate, LocalDateTime expirationDate, int banTime, DamageCause damageCause, DamageCauseType damageCauseType, Location location, Killer killer, Killer inCombatWith, String deathMessage, long timeSincePreviousDeathBan, long timeSincePreviousDeath) {
-        this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
+    public Ban(AugmentedHardcore plugin, LocalDateTime startDate, LocalDateTime expirationDate, int banTime, DamageCause damageCause, DamageCauseType damageCauseType, Location location, Killer killer, Killer inCombatWith, String deathMessage, long timeSincePreviousDeathBan, long timeSincePreviousDeath) {
+        this.plugin = plugin;
         this.startDate = startDate;
         this.expirationDate = expirationDate;
         this.banTime = banTime;
@@ -47,7 +46,7 @@ public class Ban {
         this.timeSincePreviousDeath = timeSincePreviousDeath;
     }
 
-    public static Ban Deserialize(ConfigurationSection section) {
+    public static Ban Deserialize(AugmentedHardcore plugin, ConfigurationSection section) {
         LocalDateTime cStartDate = LocalDateTime.parse(section.getString("StartDate", LocalDateTime.MIN.toString()));
         LocalDateTime cExpirationDate = LocalDateTime.parse(section.getString("ExpirationDate", LocalDateTime.MIN.toString()));
         DamageCause cDamageCause = ConfigUtils.getDamageCause(section.getString("DamageCause", DamageCause.VOID.name()), DamageCause.VOID);
@@ -76,7 +75,7 @@ public class Ban {
             cInCombatWith = Killer.Deserialize(inCombatWithSection);
         }
 
-        return new Ban(cStartDate, cExpirationDate, cBanTime, cDamageCause, cDamageCauseType, cLocation, cKiller, cInCombatWith, cDeathMessage, cTimeSincePreviousDeathBan, cTimeSincePreviousDeath);
+        return new Ban(plugin, cStartDate, cExpirationDate, cBanTime, cDamageCause, cDamageCauseType, cLocation, cKiller, cInCombatWith, cDeathMessage, cTimeSincePreviousDeathBan, cTimeSincePreviousDeath);
     }
 
     public String getBanMessage() {

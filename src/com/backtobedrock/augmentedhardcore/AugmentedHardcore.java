@@ -78,7 +78,7 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
         this.initialize();
 
         //update checker
-        this.updateChecker = new UpdateChecker();
+        this.updateChecker = new UpdateChecker(this);
         this.updateChecker.start();
 
         //bstats metrics

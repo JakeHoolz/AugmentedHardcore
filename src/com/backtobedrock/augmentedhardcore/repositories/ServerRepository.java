@@ -61,7 +61,7 @@ public class ServerRepository {
 
     private ServerData getFromDataAndCache(ServerData serverData) {
         if (serverData == null) {
-            serverData = new ServerData();
+            serverData = new ServerData(this.plugin);
             this.mapper.insertServerDataAsync(serverData);
         }
         this.serverData = serverData;

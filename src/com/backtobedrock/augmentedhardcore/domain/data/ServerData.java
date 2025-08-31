@@ -7,7 +7,6 @@ import com.backtobedrock.augmentedhardcore.runnables.Unban;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.javatuples.Pair;
 
 import java.time.LocalDateTime;
@@ -25,12 +24,12 @@ public class ServerData {
     private final Map<String, Ban> ongoingIPBans = new HashMap<>();
     private int totalDeathBans;
 
-    public ServerData() {
-        this(0, new HashMap<>());
+    public ServerData(AugmentedHardcore plugin) {
+        this(plugin, 0, new HashMap<>());
     }
 
-    public ServerData(int totalDeathBans, Map<UUID, Pair<Integer, Ban>> ongoingBans) {
-        this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
+    public ServerData(AugmentedHardcore plugin, int totalDeathBans, Map<UUID, Pair<Integer, Ban>> ongoingBans) {
+        this.plugin = plugin;
         this.server = this.plugin.getServer();
         this.totalDeathBans = totalDeathBans;
         ongoingBans.forEach((key, value) -> {
@@ -42,7 +41,7 @@ public class ServerData {
         });
     }
 
-    public static ServerData deserialize(ConfigurationSection section) {
+    public static ServerData deserialize(AugmentedHardcore plugin, ConfigurationSection section) {
         Map<UUID, Pair<Integer, Ban>> cOngoingBans = new HashMap<>();
         int cTotalBans = section.getInt("TotalDeathBans", section.getInt("TotalBans", 0));
 
@@ -61,7 +60,7 @@ public class ServerData {
                             ConfigurationSection banConfiguration = banSection.getConfigurationSection(a);
                             Ban ban = null;
                             if (banConfiguration != null) {
-                                ban = Ban.Deserialize(banConfiguration);
+                                ban = Ban.Deserialize(plugin, banConfiguration);
                             }
                             //if exists, put in map
                             if (ban != null) {
@@ -74,7 +73,7 @@ public class ServerData {
                 }
             });
         }
-        return new ServerData(cTotalBans, cOngoingBans);
+        return new ServerData(plugin, cTotalBans, cOngoingBans);
     }
 
     public int getTotalDeathBans() {
@@ -102,7 +101,7 @@ public class ServerData {
     }
 
     private void startBan(OfflinePlayer player, Pair<Integer, Ban> ban) {
-        Unban unban = new Unban(player, ban);
+        Unban unban = new Unban(this.plugin, player, ban);
         this.ongoingBans.put(player.getUniqueId(), unban);
         if (ban.getValue1().getBanTime() != -1) {
             unban.start();

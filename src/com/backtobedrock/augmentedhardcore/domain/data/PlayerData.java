@@ -94,7 +94,7 @@ public class PlayerData {
             for (String e : bansSection.getKeys(false)) {
                 ConfigurationSection banSection = bansSection.getConfigurationSection(e);
                 if (banSection != null) {
-                    cBans.put(Integer.parseInt(e), Ban.Deserialize(banSection));
+                    cBans.put(Integer.parseInt(e), Ban.Deserialize(plugin, banSection));
                 }
             }
         }

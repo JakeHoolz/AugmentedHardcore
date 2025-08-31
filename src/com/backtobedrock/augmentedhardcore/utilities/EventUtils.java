@@ -151,6 +151,7 @@ public class EventUtils {
                 timeSinceLastDeath = MessageUtils.timeBetweenDatesToTicks(now, playerData.getLastDeath());
 
         return new Ban(
+                JavaPlugin.getPlugin(AugmentedHardcore.class),
                 now,
                 now.plusMinutes(banTime),
                 banTime,

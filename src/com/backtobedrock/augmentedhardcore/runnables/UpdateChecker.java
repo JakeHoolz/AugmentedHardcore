@@ -1,7 +1,6 @@
 package com.backtobedrock.augmentedhardcore.runnables;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.IOException;
@@ -14,9 +13,13 @@ import java.util.logging.Level;
 
 public class UpdateChecker extends BukkitRunnable {
 
-    private final AugmentedHardcore plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
+    private final AugmentedHardcore plugin;
     private boolean outdated = false;
     private String newestVersion;
+
+    public UpdateChecker(AugmentedHardcore plugin) {
+        this.plugin = plugin;
+    }
 
     public void start() {
         this.runTaskTimerAsynchronously(this.plugin, 0L, 12000L);

@@ -75,7 +75,7 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
                         }
                     }
                 }
-                return new ServerData(totalDeathBans, deathBans);
+                return new ServerData(this.plugin, totalDeathBans, deathBans);
             } catch (SQLException | UnknownHostException e) {
                 this.plugin.getLogger().log(Level.SEVERE, "Could not load server data.", e);
             }

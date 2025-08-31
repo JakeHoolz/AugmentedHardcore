@@ -70,7 +70,7 @@ public class PlayerRepository {
         }
 
         if (!player.isOnline()) {
-            new ClearCache(player).runTaskLater(this.plugin, 6000);
+            new ClearCache(this.plugin, player).runTaskLater(this.plugin, 6000);
         }
 
         return playerData;
