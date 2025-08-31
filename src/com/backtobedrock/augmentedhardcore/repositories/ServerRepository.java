@@ -72,8 +72,8 @@ public class ServerRepository {
         return this.serverData;
     }
 
-    public void updateServerData(ServerData data) {
-        this.mapper.updateServerData(data);
+    public CompletableFuture<Void> updateServerData(ServerData data) {
+        return this.mapper.updateServerData(data);
     }
 
     public void removeBanFromServerData(UUID uuid, Pair<Integer, Ban> banPair) {

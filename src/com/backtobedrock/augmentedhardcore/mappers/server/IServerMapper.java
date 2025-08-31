@@ -18,7 +18,7 @@ public interface IServerMapper {
     CompletableFuture<ServerData> getServerData(Server server);
 
     //Update
-    void updateServerData(ServerData data);
+    CompletableFuture<Void> updateServerData(ServerData data);
 
     //Delete
     void deleteServerData();

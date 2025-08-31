@@ -40,7 +40,7 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
 
     @Override
     public void insertServerDataAsync(ServerData serverData) {
-        CompletableFuture.runAsync(() -> this.updateServerData(serverData), this.plugin.getExecutor()).exceptionally(ex -> {
+        this.updateServerData(serverData).exceptionally(ex -> {
             this.plugin.getLogger().log(Level.SEVERE, "Could not insert server data asynchronously.", ex);
             return null;
         });
@@ -48,7 +48,7 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
 
     @Override
     public void insertServerDataSync(ServerData serverData) {
-        Bukkit.getScheduler().runTask(this.plugin, () -> this.updateServerData(serverData));
+        Bukkit.getScheduler().runTask(this.plugin, () -> this.updateServerData(serverData).join());
     }
 
     @Override
@@ -84,8 +84,8 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
     }
 
     @Override
-    public void updateServerData(ServerData data) {
-        CompletableFuture.runAsync(() -> {
+    public CompletableFuture<Void> updateServerData(ServerData data) {
+        return CompletableFuture.runAsync(() -> {
             String sql = "INSERT INTO ah_server (`server_ip`, `server_port`, `total_death_bans`)"
                     + "VALUES(?, ?, ?)"
                     + "ON DUPLICATE KEY UPDATE `total_death_bans` = ?;";
