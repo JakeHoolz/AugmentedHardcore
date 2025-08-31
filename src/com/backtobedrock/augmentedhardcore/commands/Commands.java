@@ -67,6 +67,8 @@ public class Commands implements TabCompleter {
             case "serverdeathbans":
                 new CommandServerDeathBans(cs, args).run();
                 break;
+            default:
+                return false;
         }
         return true;
     }
