@@ -1,5 +1,6 @@
 package com.backtobedrock.augmentedhardcore.guis;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.guis.clickActions.ClickActionConfirmUnDeathBan;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
@@ -10,8 +11,8 @@ public class GuiUnDeathBan extends AbstractConfirmationGui {
     private final OfflinePlayer target;
     private final ItemStack item;
 
-    public GuiUnDeathBan(OfflinePlayer target, ItemStack item) {
-        super(String.format("Undeathbanning %s", target.getName()));
+    public GuiUnDeathBan(AugmentedHardcore plugin, OfflinePlayer target, ItemStack item) {
+        super(plugin, String.format("Undeathbanning %s", target.getName()));
         this.target = target;
         this.item = item;
         this.initialize();
@@ -29,6 +30,6 @@ public class GuiUnDeathBan extends AbstractConfirmationGui {
     }
 
     public void updateConfirmation(boolean update) {
-        super.updateConfirmation(Collections.singletonList(new ClickActionConfirmUnDeathBan(this.target)), update);
+        super.updateConfirmation(Collections.singletonList(new ClickActionConfirmUnDeathBan(this.plugin, this.target)), update);
     }
 }

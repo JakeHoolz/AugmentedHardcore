@@ -1,5 +1,6 @@
 package com.backtobedrock.augmentedhardcore.guis.clickActions;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.commands.CommandUnDeathBan;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -7,7 +8,8 @@ import org.bukkit.entity.Player;
 public class ClickActionConfirmUnDeathBan extends AbstractClickAction {
     private final OfflinePlayer target;
 
-    public ClickActionConfirmUnDeathBan(OfflinePlayer target) {
+    public ClickActionConfirmUnDeathBan(AugmentedHardcore plugin, OfflinePlayer target) {
+        super(plugin);
         this.target = target;
     }
 

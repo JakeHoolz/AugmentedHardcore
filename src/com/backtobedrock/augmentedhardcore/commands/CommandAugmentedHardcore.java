@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.OptionalInt;
 
 public class CommandAugmentedHardcore extends AbstractCommand {
     public CommandAugmentedHardcore(CommandSender cs, String[] args) {
@@ -38,12 +39,16 @@ public class CommandAugmentedHardcore extends AbstractCommand {
         if (!this.hasCorrectAmountOfArguments(command))
             return;
 
+        OptionalInt amountOptional;
+        int amount;
+
         switch (command) {
             case ADDLIVES:
-                int amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
-                if (amount == -1) {
+                amountOptional = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
+                if (amountOptional.isEmpty()) {
                     return;
                 }
+                amount = amountOptional.getAsInt();
 
                 this.hasPlayedBefore(this.args[1]).thenAcceptAsync(bool -> {
                     if (!bool) {
@@ -74,10 +79,11 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                 });
                 break;
             case ADDLIFEPARTS:
-                amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
-                if (amount == -1) {
+                amountOptional = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
+                if (amountOptional.isEmpty()) {
                     return;
                 }
+                amount = amountOptional.getAsInt();
 
                 this.hasPlayedBefore(this.args[1]).thenAcceptAsync(bool -> {
                     if (!bool) {
@@ -108,10 +114,11 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                 });
                 break;
             case SETLIVES:
-                amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
-                if (amount == -1) {
+                amountOptional = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
+                if (amountOptional.isEmpty()) {
                     return;
                 }
+                amount = amountOptional.getAsInt();
 
                 this.hasPlayedBefore(this.args[1]).thenAcceptAsync(bool -> {
                     if (!bool) {
@@ -142,10 +149,11 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                 });
                 break;
             case SETLIFEPARTS:
-                amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
-                if (amount == -1) {
+                amountOptional = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
+                if (amountOptional.isEmpty()) {
                     return;
                 }
+                amount = amountOptional.getAsInt();
 
                 this.hasPlayedBefore(this.args[1]).thenAcceptAsync(bool -> {
                     if (!bool) {
@@ -176,10 +184,11 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                 });
                 break;
             case ADDMAXHEALTH:
-                amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
-                if (amount == -1) {
+                amountOptional = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
+                if (amountOptional.isEmpty()) {
                     return;
                 }
+                amount = amountOptional.getAsInt();
 
                 this.hasPlayedBefore(this.args[1]).thenAcceptAsync(bool -> {
                     if (!bool) {
@@ -208,10 +217,11 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                 });
                 break;
             case SETMAXHEALTH:
-                amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
-                if (amount == -1) {
+                amountOptional = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
+                if (amountOptional.isEmpty()) {
                     return;
                 }
+                amount = amountOptional.getAsInt();
 
                 this.hasPlayedBefore(this.args[1]).thenAcceptAsync(bool -> {
                     if (!bool) {

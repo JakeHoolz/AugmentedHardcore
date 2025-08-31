@@ -1,5 +1,6 @@
 package com.backtobedrock.augmentedhardcore.guis;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.guis.clickActions.ClickActionNextPage;
 import com.backtobedrock.augmentedhardcore.guis.clickActions.ClickActionPreviousPage;
 import com.backtobedrock.augmentedhardcore.utilities.MessageUtils;
@@ -12,8 +13,8 @@ public abstract class AbstractPaginatedGui extends AbstractGui {
     protected int currentPage = 1;
     protected int totalPages;
 
-    public AbstractPaginatedGui(CustomHolder customHolder, int dataCount) {
-        super(customHolder);
+    public AbstractPaginatedGui(AugmentedHardcore plugin, CustomHolder customHolder, int dataCount) {
+        super(plugin, customHolder);
         this.totalPages = (int) Math.ceil((double) dataCount / 28);
     }
 
@@ -28,7 +29,7 @@ public abstract class AbstractPaginatedGui extends AbstractGui {
     protected void setData() {
         //Previous page button
         if (this.totalPages > 1 && this.currentPage > 1) {
-            this.customHolder.setIcon((this.customHolder.getRowAmount() - 1) * 9 + 3, new Icon(this.previousPageDisplayItem(), Collections.singletonList(new ClickActionPreviousPage(this))));
+            this.customHolder.setIcon((this.customHolder.getRowAmount() - 1) * 9 + 3, new Icon(this.previousPageDisplayItem(), Collections.singletonList(new ClickActionPreviousPage(this.plugin, this))));
         }
 
         //Current page
@@ -36,7 +37,7 @@ public abstract class AbstractPaginatedGui extends AbstractGui {
 
         //Next page button
         if (this.totalPages > 1 && this.currentPage < this.totalPages) {
-            this.customHolder.setIcon((this.customHolder.getRowAmount() - 1) * 9 + 5, new Icon(this.nextPageDisplayItem(), Collections.singletonList(new ClickActionNextPage(this))));
+            this.customHolder.setIcon((this.customHolder.getRowAmount() - 1) * 9 + 5, new Icon(this.nextPageDisplayItem(), Collections.singletonList(new ClickActionNextPage(this.plugin, this))));
         }
     }
 
