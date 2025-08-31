@@ -2,7 +2,6 @@ package com.backtobedrock.augmentedhardcore.guis;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Collections;
 import java.util.List;
@@ -11,8 +10,8 @@ public abstract class AbstractGui {
     protected final AugmentedHardcore plugin;
     protected final CustomHolder customHolder;
 
-    public AbstractGui(CustomHolder customHolder) {
-        this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
+    public AbstractGui(AugmentedHardcore plugin, CustomHolder customHolder) {
+        this.plugin = plugin;
         this.customHolder = customHolder;
     }
 

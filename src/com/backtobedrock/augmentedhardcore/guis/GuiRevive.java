@@ -1,5 +1,6 @@
 package com.backtobedrock.augmentedhardcore.guis;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import com.backtobedrock.augmentedhardcore.guis.clickActions.ClickActionConfirmRevive;
 import com.backtobedrock.augmentedhardcore.utilities.InventoryUtils;
@@ -15,8 +16,8 @@ public class GuiRevive extends AbstractConfirmationGui {
     private final OfflinePlayer reviving;
     private PlayerData revivingData;
 
-    public GuiRevive(PlayerData reviverData, OfflinePlayer reviving) {
-        super(String.format("Reviving %s", reviving.getName()));
+    public GuiRevive(AugmentedHardcore plugin, PlayerData reviverData, OfflinePlayer reviving) {
+        super(plugin, String.format("Reviving %s", reviving.getName()));
         this.reviverData = reviverData;
         this.reviving = reviving;
         this.plugin.getPlayerRepository().getByPlayer(this.reviving)
@@ -54,6 +55,6 @@ public class GuiRevive extends AbstractConfirmationGui {
     }
 
     public void updateConfirmation(boolean update) {
-        super.updateConfirmation(Collections.singletonList(new ClickActionConfirmRevive(this.reviverData, this.revivingData)), update);
+        super.updateConfirmation(Collections.singletonList(new ClickActionConfirmRevive(this.plugin, this.reviverData, this.revivingData)), update);
     }
 }

@@ -1,5 +1,6 @@
 package com.backtobedrock.augmentedhardcore.guis;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
 import com.backtobedrock.augmentedhardcore.guis.clickActions.AbstractClickAction;
@@ -18,8 +19,8 @@ public class GuiServerDeathBans extends AbstractDeathBansGui {
     private final ServerData serverData;
     private final Player player;
 
-    public GuiServerDeathBans(Player player, ServerData serverData) {
-        super("Currently Ongoing Death Bans", serverData.getTotalOngoingBans());
+    public GuiServerDeathBans(AugmentedHardcore plugin, Player player, ServerData serverData) {
+        super(plugin, "Currently Ongoing Death Bans", serverData.getTotalOngoingBans());
         serverData.getOngoingBans().forEach((key, value) -> this.bans.put(new Pair<>(Bukkit.getOfflinePlayer(key), value.getBan().getValue0()), value.getBan().getValue1()));
         this.serverData = serverData;
         this.player = player;
@@ -44,7 +45,7 @@ public class GuiServerDeathBans extends AbstractDeathBansGui {
         List<AbstractClickAction> clickActions = new ArrayList<>();
         ItemStack item = InventoryUtils.createPlayerSkull(String.format("%s - %s", player.getName(), this.plugin.getConfigurations().getGuisConfiguration().getBanDisplay().getName()), this.plugin.getConfigurations().getGuisConfiguration().getBanDisplay().getLore(), player);
         if (this.player.hasPermission(Permission.UNDEATHBAN.getPermissionString())) {
-            clickActions.add(new ClickActionOpenUnDeathBanGui(player, item));
+            clickActions.add(new ClickActionOpenUnDeathBanGui(this.plugin, player, item));
         }
         return new Icon(MessageUtils.replaceItemNameAndLorePlaceholders(item, placeholders), clickActions);
     }

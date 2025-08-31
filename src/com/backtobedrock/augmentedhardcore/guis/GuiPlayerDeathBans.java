@@ -1,5 +1,6 @@
 package com.backtobedrock.augmentedhardcore.guis;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import com.backtobedrock.augmentedhardcore.domain.enums.TimePattern;
@@ -19,8 +20,8 @@ import java.util.concurrent.TimeUnit;
 public class GuiPlayerDeathBans extends AbstractDeathBansGui {
     private final PlayerData playerData;
 
-    public GuiPlayerDeathBans(PlayerData playerData) {
-        super(String.format("%s Death Bans", playerData.getPlayer().getName()), playerData.getBanManager().getBanCount());
+    public GuiPlayerDeathBans(AugmentedHardcore plugin, PlayerData playerData) {
+        super(plugin, String.format("%s Death Bans", playerData.getPlayer().getName()), playerData.getBanManager().getBanCount());
         playerData.getBanManager().getBans().forEach((key, value) -> this.bans.put(new Pair<>(playerData.getPlayer(), key), value));
         this.playerData = playerData;
         this.initialize();

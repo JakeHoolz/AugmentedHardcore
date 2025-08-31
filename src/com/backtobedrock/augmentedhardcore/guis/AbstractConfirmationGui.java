@@ -1,5 +1,6 @@
 package com.backtobedrock.augmentedhardcore.guis;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.guis.clickActions.AbstractClickAction;
 import com.backtobedrock.augmentedhardcore.guis.clickActions.ClickActionCloseInventory;
 
@@ -9,8 +10,8 @@ import java.util.List;
 
 public abstract class AbstractConfirmationGui extends AbstractGui {
 
-    public AbstractConfirmationGui(String title) {
-        super(new CustomHolder(54, title));
+    public AbstractConfirmationGui(AugmentedHardcore plugin, String title) {
+        super(plugin, new CustomHolder(54, title));
     }
 
     @Override
@@ -26,7 +27,7 @@ public abstract class AbstractConfirmationGui extends AbstractGui {
     }
 
     public void updateCancellation(boolean update) {
-        this.setIcon(38, new Icon(this.plugin.getConfigurations().getGuisConfiguration().getCancellationDisplay().getItem(), Collections.singletonList(new ClickActionCloseInventory())), update);
+        this.setIcon(38, new Icon(this.plugin.getConfigurations().getGuisConfiguration().getCancellationDisplay().getItem(), Collections.singletonList(new ClickActionCloseInventory(this.plugin))), update);
     }
 
     public void updateInfo(Icon icon, boolean update) {

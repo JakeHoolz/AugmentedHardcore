@@ -1,5 +1,6 @@
 package com.backtobedrock.augmentedhardcore.guis;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
 import org.bukkit.OfflinePlayer;
 import org.javatuples.Pair;
@@ -11,8 +12,8 @@ import java.util.logging.Level;
 public abstract class AbstractDeathBansGui extends AbstractPaginatedGui {
     protected final Map<Pair<OfflinePlayer, Integer>, Ban> bans = new LinkedHashMap<>();
 
-    public AbstractDeathBansGui(String title, int dataSize) {
-        super(new CustomHolder(dataSize, title), dataSize);
+    public AbstractDeathBansGui(AugmentedHardcore plugin, String title, int dataSize) {
+        super(plugin, new CustomHolder(dataSize, title), dataSize);
     }
 
     @Override
