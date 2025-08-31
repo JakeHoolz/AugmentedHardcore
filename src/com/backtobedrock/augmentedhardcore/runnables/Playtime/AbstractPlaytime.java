@@ -32,18 +32,19 @@ public abstract class AbstractPlaytime extends BukkitRunnable {
 
     @Override
     public void run() {
-        this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> {
-            if (serverData.isDeathBanned(this.player.getUniqueId())) {
-                return;
-            }
+        this.plugin.getServerRepository().getServerData(this.plugin.getServer())
+                .thenAcceptAsync(serverData -> {
+                    if (serverData.isDeathBanned(this.player.getUniqueId())) {
+                        return;
+                    }
 
-            this.timerTask();
-            this.timer++;
-            if (this.timer == 300) {
-                this.plugin.getPlayerRepository().updatePlayerData(this.playerData);
-                this.timer = 0;
-            }
-        });
+                    this.timerTask();
+                    this.timer++;
+                    if (this.timer == 300) {
+                        this.plugin.getPlayerRepository().updatePlayerData(this.playerData);
+                        this.timer = 0;
+                    }
+                }, this.plugin.getExecutor());
     }
 
     protected abstract void timerTask();

@@ -13,10 +13,12 @@ public class ListenerPlayerDeath extends AbstractEventListener {
     public void PlayerDeathListener(PlayerDeathEvent event) {
         Player player = event.getEntity();
 
-        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> playerData.onDeath(event, player)).exceptionally(ex -> {
-            this.plugin.getLogger().log(Level.SEVERE, "Error handling player death.", ex);
-            return null;
-        });
+        this.plugin.getPlayerRepository().getByPlayer(player)
+                .thenAcceptAsync(playerData -> playerData.onDeath(event, player), this.plugin.getExecutor())
+                .exceptionallyAsync(ex -> {
+                    this.plugin.getLogger().log(Level.SEVERE, "Error handling player death.", ex);
+                    return null;
+                }, this.plugin.getExecutor());
     }
 
     @Override

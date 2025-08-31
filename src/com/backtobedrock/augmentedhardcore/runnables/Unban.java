@@ -37,7 +37,8 @@ public class Unban extends BukkitRunnable {
 
     public void finish() {
         this.stop();
-        this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> serverData.removeBan(this.player));
+        this.plugin.getServerRepository().getServerData(this.plugin.getServer())
+                .thenAcceptAsync(serverData -> serverData.removeBan(this.player), this.plugin.getExecutor());
     }
 
     @Override
