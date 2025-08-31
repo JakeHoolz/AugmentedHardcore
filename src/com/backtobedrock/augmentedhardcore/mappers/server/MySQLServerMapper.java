@@ -23,17 +23,9 @@ import java.util.logging.Level;
 
 public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
 
-    private static MySQLServerMapper instance;
     private final MySQLBanMapper banMapper;
 
-    public static synchronized MySQLServerMapper getInstance(AugmentedHardcore plugin) {
-        if (instance == null) {
-            instance = new MySQLServerMapper(plugin);
-        }
-        return instance;
-    }
-
-    private MySQLServerMapper(AugmentedHardcore plugin) {
+    public MySQLServerMapper(AugmentedHardcore plugin) {
         super(plugin);
         this.banMapper = new MySQLBanMapper(plugin);
     }
