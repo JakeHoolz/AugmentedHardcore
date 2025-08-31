@@ -91,6 +91,10 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
             }
         }
 
+        if (this.updateChecker != null) {
+            this.updateChecker.stop();
+        }
+
         if (this.executor != null) {
             this.executor.shutdown();
         }
