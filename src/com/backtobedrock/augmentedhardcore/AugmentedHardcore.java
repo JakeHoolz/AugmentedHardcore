@@ -130,34 +130,37 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
             this.executor = Executors.newFixedThreadPool(Math.max(2, Runtime.getRuntime().availableProcessors()), this.asyncThreadFactory);
         }
 
-        //initialize old config directory
+        this.prepareConfigFiles();
+        this.loadConfigurations();
+        this.setupDatabase();
+        this.initRepositories();
+        this.registerListeners();
+    }
+
+    private void prepareConfigFiles() {
         File dir = new File(this.getDataFolder() + "/old");
-        List<File> configs = new ArrayList<File>() {{
-            add(new File(getDataFolder(), "config.old.yml"));
-            add(new File(getDataFolder(), "messages.old.yml"));
-        }};
+        List<File> configs = List.of(
+                new File(getDataFolder(), "config.old.yml"),
+                new File(getDataFolder(), "messages.old.yml")
+        );
         //noinspection ResultOfMethodCallIgnored
         dir.mkdir();
         //noinspection ResultOfMethodCallIgnored
         configs.stream().filter(File::exists).forEach(File::delete);
 
-        //get config.yml and make if none existent
         File configFile = new File(this.getDataFolder(), "config.yml");
         if (!configFile.exists()) {
             this.getLogger().log(Level.INFO, "Creating {0}.", configFile.getAbsolutePath());
             this.saveResource("config.yml", false);
         }
 
-        //get messages.yml and make if none existent
         File messagesFile = new File(this.getDataFolder(), "messages.yml");
         if (!messagesFile.exists()) {
             this.getLogger().log(Level.INFO, "Creating {0}.", messagesFile.getAbsolutePath());
             this.saveResource("messages.yml", false);
         }
 
-        //update configurations
         try {
-            //config.yml
             File copy = new File(this.getDataFolder() + "/old/", "config.old.yml");
             if (copy.exists()) {
                 //noinspection ResultOfMethodCallIgnored
@@ -165,13 +168,11 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
             }
             Files.copy(configFile.toPath(), copy.toPath());
             ConfigUpdater.update(this, "config.yml", configFile, Arrays.asList("LifePartsPerKill", "MaxHealthIncreasePerKill"));
-            configFile = new File(this.getDataFolder(), "config.yml");
         } catch (IOException e) {
             getLogger().log(Level.SEVERE, "Failed to update config.yml", e);
         }
 
         try {
-            //messages.yml
             File copy = new File(this.getDataFolder() + "/old/", "messages.old.yml");
             if (copy.exists()) {
                 //noinspection ResultOfMethodCallIgnored
@@ -179,38 +180,20 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
             }
             Files.copy(messagesFile.toPath(), copy.toPath());
             ConfigUpdater.update(this, "messages.yml", messagesFile, Collections.emptyList());
-            messagesFile = new File(this.getDataFolder(), "messages.yml");
         } catch (IOException e) {
             getLogger().log(Level.SEVERE, "Failed to update messages.yml", e);
         }
-
-        //initialize config and messages
-        this.configurations = new Configurations(configFile);
-        this.messages = new Messages(messagesFile);
-
-        //initialize commands
-        this.commands = new Commands();
-
-        //initialize database if needed
-        this.initDB();
-
-        //initialize repositories
-        if (this.playerRepository == null) {
-            this.playerRepository = new PlayerRepository(this);
-        } else {
-            this.playerRepository.onReload();
-        }
-        if (this.serverRepository == null) {
-            this.serverRepository = new ServerRepository(this);
-        } else {
-            this.serverRepository.onReload();
-        }
-
-        //register event listeners
-        this.registerListeners();
     }
 
-    private void initDB() {
+    private void loadConfigurations() {
+        File configFile = new File(this.getDataFolder(), "config.yml");
+        File messagesFile = new File(this.getDataFolder(), "messages.yml");
+        this.configurations = new Configurations(configFile);
+        this.messages = new Messages(messagesFile);
+        this.commands = new Commands();
+    }
+
+    private void setupDatabase() {
         if (this.getConfigurations().getDataConfiguration().getStorageType() != StorageType.MYSQL) {
             return;
         }
@@ -242,6 +225,19 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
         ).forEach(Patch::executePatch);
 
         getLogger().info("Setup complete.");
+    }
+
+    private void initRepositories() {
+        if (this.playerRepository == null) {
+            this.playerRepository = new PlayerRepository(this);
+        } else {
+            this.playerRepository.onReload();
+        }
+        if (this.serverRepository == null) {
+            this.serverRepository = new ServerRepository(this);
+        } else {
+            this.serverRepository.onReload();
+        }
     }
 
     private void registerListeners() {
