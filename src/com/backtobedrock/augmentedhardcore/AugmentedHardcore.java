@@ -188,6 +188,8 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
         }
         if (this.serverRepository == null) {
             this.serverRepository = new ServerRepository(this);
+        } else {
+            this.serverRepository.onReload();
         }
 
         //register event listeners

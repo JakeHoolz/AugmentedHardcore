@@ -17,16 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 public class MySQLBanMapper extends AbstractMapper implements IBanMapper {
-    private static MySQLBanMapper instance;
-
-    public static synchronized MySQLBanMapper getInstance(AugmentedHardcore plugin) {
-        if (instance == null) {
-            instance = new MySQLBanMapper(plugin);
-        }
-        return instance;
-    }
-
-    private MySQLBanMapper(AugmentedHardcore plugin) {
+    public MySQLBanMapper(AugmentedHardcore plugin) {
         super(plugin);
     }
 
