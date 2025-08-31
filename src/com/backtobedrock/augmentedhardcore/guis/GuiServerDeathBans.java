@@ -11,7 +11,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.javatuples.Pair;
 
 import java.util.*;
 
@@ -21,7 +20,7 @@ public class GuiServerDeathBans extends AbstractDeathBansGui {
 
     public GuiServerDeathBans(AugmentedHardcore plugin, Player player, ServerData serverData) {
         super(plugin, "Currently Ongoing Death Bans", serverData.getTotalOngoingBans());
-        serverData.getOngoingBans().forEach((key, value) -> this.bans.put(new Pair<>(Bukkit.getOfflinePlayer(key), value.getBan().getValue0()), value.getBan().getValue1()));
+        serverData.getOngoingBans().forEach((key, value) -> this.bans.put(Map.entry(Bukkit.getOfflinePlayer(key), value.getBan().id()), value.getBan().ban()));
         this.serverData = serverData;
         this.player = player;
         this.initialize();

@@ -25,7 +25,7 @@ public class ListenerPlayerLogin extends AbstractEventListener {
                 return;
             }
         } else {
-            ban = unban.getBan().getValue1();
+            ban = unban.getBan().ban();
         }
 
         if (player.hasPermission(Permission.BYPASS_BAN_SPECTATOR.getPermissionString())) {

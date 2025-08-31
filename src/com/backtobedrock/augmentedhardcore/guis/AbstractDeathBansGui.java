@@ -3,14 +3,13 @@ package com.backtobedrock.augmentedhardcore.guis;
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
 import org.bukkit.OfflinePlayer;
-import org.javatuples.Pair;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 public abstract class AbstractDeathBansGui extends AbstractPaginatedGui {
-    protected final Map<Pair<OfflinePlayer, Integer>, Ban> bans = new LinkedHashMap<>();
+    protected final Map<Map.Entry<OfflinePlayer, Integer>, Ban> bans = new LinkedHashMap<>();
 
     public AbstractDeathBansGui(AugmentedHardcore plugin, String title, int dataSize) {
         super(plugin, new CustomHolder(dataSize, title), dataSize);
@@ -29,7 +28,7 @@ public abstract class AbstractDeathBansGui extends AbstractPaginatedGui {
         super.setData();
 
         List<Icon> icons = new ArrayList<>();
-        List<Map.Entry<Pair<OfflinePlayer, Integer>, Ban>> currentData = new ArrayList<>(this.bans.entrySet()).subList((this.currentPage - 1) * 28, Math.min(this.currentPage * 28, this.bans.size()));
+        List<Map.Entry<Map.Entry<OfflinePlayer, Integer>, Ban>> currentData = new ArrayList<>(this.bans.entrySet()).subList((this.currentPage - 1) * 28, Math.min(this.currentPage * 28, this.bans.size()));
 
         //loading icons
         for (int i = 0; i < currentData.size(); i++) {
@@ -49,9 +48,9 @@ public abstract class AbstractDeathBansGui extends AbstractPaginatedGui {
         Map<String, String> placeholders = new HashMap<>();
         CompletableFuture.runAsync(() -> {
             currentData.forEach(e -> {
-                placeholders.put("ban_number", e.getKey().getValue1().toString());
+                placeholders.put("ban_number", e.getKey().getValue().toString());
                 placeholders.putAll(e.getValue().getPlaceholdersReplacements());
-                icons.add(this.getIcon(e.getKey().getValue0(), placeholders));
+                icons.add(this.getIcon(e.getKey().getKey(), placeholders));
                 if (icons.size() == 7) {
                     this.customHolder.addRow(icons);
                     icons.clear();

@@ -2,13 +2,13 @@ package com.backtobedrock.augmentedhardcore.domain.data;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
+import com.backtobedrock.augmentedhardcore.domain.BanEntry;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
 import com.backtobedrock.augmentedhardcore.runnables.Unban;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.javatuples.Pair;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -29,7 +29,7 @@ public class ServerData {
         this(0, new HashMap<>());
     }
 
-    public ServerData(int totalDeathBans, Map<UUID, Pair<Integer, Ban>> ongoingBans) {
+    public ServerData(int totalDeathBans, Map<UUID, BanEntry> ongoingBans) {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
         this.server = this.plugin.getServer();
         this.totalDeathBans = totalDeathBans;
@@ -37,13 +37,13 @@ public class ServerData {
             OfflinePlayer player = Bukkit.getOfflinePlayer(key);
             this.startBan(player, value);
             if (this.plugin.getConfigurations().getDeathBanConfiguration().getBanType() == BanList.Type.IP) {
-                this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> this.ongoingIPBans.put(playerData.getLastKnownIp(), value.getValue1()));
+                this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> this.ongoingIPBans.put(playerData.getLastKnownIp(), value.ban()));
             }
         });
     }
 
     public static ServerData deserialize(ConfigurationSection section) {
-        Map<UUID, Pair<Integer, Ban>> cOngoingBans = new HashMap<>();
+        Map<UUID, BanEntry> cOngoingBans = new HashMap<>();
         int cTotalBans = section.getInt("TotalDeathBans", section.getInt("TotalBans", 0));
 
         //get ongoing bans section
@@ -65,7 +65,7 @@ public class ServerData {
                             }
                             //if exists, put in map
                             if (ban != null) {
-                                cOngoingBans.put(uuid, new Pair<>(id, ban));
+                                cOngoingBans.put(uuid, new BanEntry(id, ban));
                             }
                         });
                     }
@@ -85,26 +85,26 @@ public class ServerData {
         return this.ongoingBans.size();
     }
 
-    public void addBan(PlayerData playerData, Player player, Pair<Integer, Ban> ban) {
+    public void addBan(PlayerData playerData, Player player, BanEntry ban) {
         if (player.hasPermission(Permission.BYPASS_BAN_SPECTATOR.getPermissionString())) {
             Bukkit.getScheduler().runTask(plugin, () -> player.setGameMode(GameMode.SPECTATOR));
             playerData.stopPlaytimeRunnables();
             playerData.setSpectatorBanned(true);
         } else {
-            Bukkit.getScheduler().runTask(plugin, () -> player.kickPlayer(ban.getValue1().getBanMessage()));
+            Bukkit.getScheduler().runTask(plugin, () -> player.kickPlayer(ban.ban().getBanMessage()));
         }
         this.startBan(player, ban);
         if (this.plugin.getConfigurations().getDeathBanConfiguration().getBanType() == BanList.Type.IP) {
-            this.ongoingIPBans.put(playerData.getLastKnownIp(), ban.getValue1());
+            this.ongoingIPBans.put(playerData.getLastKnownIp(), ban.ban());
         }
         this.totalDeathBans++;
         this.plugin.getServerRepository().updateServerData(this);
     }
 
-    private void startBan(OfflinePlayer player, Pair<Integer, Ban> ban) {
+    private void startBan(OfflinePlayer player, BanEntry ban) {
         Unban unban = new Unban(player, ban);
         this.ongoingBans.put(player.getUniqueId(), unban);
-        if (ban.getValue1().getBanTime() != -1) {
+        if (ban.ban().getBanTime() != -1) {
             unban.start();
         }
     }
@@ -125,7 +125,7 @@ public class ServerData {
     public void removeBan(OfflinePlayer player) {
         Unban unban = this.ongoingBans.remove(player.getUniqueId());
         if (unban != null) {
-            unban.getBan().getValue1().setExpirationDate(LocalDateTime.now());
+            unban.getBan().ban().setExpirationDate(LocalDateTime.now());
             this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> {
                 this.ongoingIPBans.remove(playerData.getLastKnownIp());
                 if (player.getPlayer() != null) {
@@ -149,7 +149,7 @@ public class ServerData {
         Map<String, Object> cOngoingBans = new HashMap<>();
         this.ongoingBans.forEach((key, value) -> {
             Map<Integer, Object> cOngoingBansPlayer = new HashMap<>();
-            cOngoingBansPlayer.put(value.getBan().getValue0(), value.getBan().getValue1().serialize());
+            cOngoingBansPlayer.put(value.getBan().id(), value.getBan().ban().serialize());
             cOngoingBans.put(key.toString(), cOngoingBansPlayer);
         });
         map.put("OngoingBans", cOngoingBans);

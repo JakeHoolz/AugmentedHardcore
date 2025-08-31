@@ -1,7 +1,7 @@
 package com.backtobedrock.augmentedhardcore.domain.data;
 
 import com.backtobedrock.augmentedhardcore.domain.Ban;
-import org.javatuples.Pair;
+import com.backtobedrock.augmentedhardcore.domain.BanEntry;
 
 import java.util.Collections;
 import java.util.Map;
@@ -31,10 +31,10 @@ public class BanManager {
         return bans.size();
     }
 
-    public Pair<Integer, Ban> addBan(Ban ban) {
+    public BanEntry addBan(Ban ban) {
         int key = (bans.isEmpty() ? 0 : bans.lastKey()) + 1;
         bans.put(key, ban);
-        return new Pair<>(key, ban);
+        return new BanEntry(key, ban);
     }
 
     public void clearBans() {

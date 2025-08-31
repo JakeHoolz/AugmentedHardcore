@@ -1,13 +1,12 @@
 package com.backtobedrock.augmentedhardcore.mappers.server;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
-import com.backtobedrock.augmentedhardcore.domain.Ban;
+import com.backtobedrock.augmentedhardcore.domain.BanEntry;
 import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.javatuples.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,7 +69,7 @@ public class YAMLServerMapper implements IServerMapper {
     }
 
     @Override
-    public void deleteBanFromServerData(UUID uuid, Pair<Integer, Ban> ban) {
+    public void deleteBanFromServerData(UUID uuid, BanEntry ban) {
         CompletableFuture.runAsync(() -> {
             FileConfiguration config = this.getConfig();
             config.set("OngoingBans." + uuid, null);

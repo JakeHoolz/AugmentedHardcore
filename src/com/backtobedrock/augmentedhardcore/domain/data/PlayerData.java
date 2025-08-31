@@ -2,6 +2,7 @@ package com.backtobedrock.augmentedhardcore.domain.data;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
+import com.backtobedrock.augmentedhardcore.domain.BanEntry;
 import com.backtobedrock.augmentedhardcore.domain.Killer;
 import com.backtobedrock.augmentedhardcore.domain.enums.DamageCause;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
@@ -23,7 +24,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.javatuples.Pair;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -342,10 +342,10 @@ public class PlayerData {
         });
     }
 
-    private Pair<Integer, Ban> addBan(Ban ban) {
-        Pair<Integer, Ban> pair = this.banManager.addBan(ban);
+    private BanEntry addBan(Ban ban) {
+        BanEntry entry = this.banManager.addBan(ban);
         this.observers.forEach((k, value) -> value.get(MyStatsDeathBansObserver.class).update());
-        return pair;
+        return entry;
     }
 
     public void onRespawn(Player player) {

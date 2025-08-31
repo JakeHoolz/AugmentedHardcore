@@ -2,12 +2,12 @@ package com.backtobedrock.augmentedhardcore.mappers.player;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
+import com.backtobedrock.augmentedhardcore.domain.BanEntry;
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import com.backtobedrock.augmentedhardcore.mappers.AbstractMapper;
 import com.backtobedrock.augmentedhardcore.mappers.ban.MySQLBanMapper;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.javatuples.Pair;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -69,9 +69,9 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
                             deathBans
                     );
                 }
-                Pair<Integer, Ban> banPair = this.banMapper.getBanFromResultSetSync(resultSet);
+                BanEntry banPair = this.banMapper.getBanFromResultSetSync(resultSet);
                 if (banPair != null) {
-                    deathBans.put(banPair.getValue0(), banPair.getValue1());
+                    deathBans.put(banPair.id(), banPair.ban());
                 }
             }
             return playerData;

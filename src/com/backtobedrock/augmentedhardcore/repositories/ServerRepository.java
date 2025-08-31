@@ -1,14 +1,13 @@
 package com.backtobedrock.augmentedhardcore.repositories;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
-import com.backtobedrock.augmentedhardcore.domain.Ban;
+import com.backtobedrock.augmentedhardcore.domain.BanEntry;
 import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
 import com.backtobedrock.augmentedhardcore.domain.enums.StorageType;
 import com.backtobedrock.augmentedhardcore.mappers.server.IServerMapper;
 import com.backtobedrock.augmentedhardcore.mappers.server.MySQLServerMapper;
 import com.backtobedrock.augmentedhardcore.mappers.server.YAMLServerMapper;
 import org.bukkit.Server;
-import org.javatuples.Pair;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -76,7 +75,7 @@ public class ServerRepository {
         this.mapper.updateServerData(data);
     }
 
-    public void removeBanFromServerData(UUID uuid, Pair<Integer, Ban> banPair) {
+    public void removeBanFromServerData(UUID uuid, BanEntry banPair) {
         this.mapper.deleteBanFromServerData(uuid, banPair);
     }
 }
