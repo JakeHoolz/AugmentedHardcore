@@ -32,6 +32,11 @@ public abstract class AbstractPlaytime extends BukkitRunnable {
 
     @Override
     public void run() {
+        if (!this.player.isOnline()) {
+            this.cancel();
+            return;
+        }
+
         this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> {
             if (serverData.isDeathBanned(this.player.getUniqueId())) {
                 return;
