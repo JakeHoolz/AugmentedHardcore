@@ -14,10 +14,12 @@ public class ListenerPlayerJoin extends AbstractEventListener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(e -> e.onJoin(player)).exceptionally(ex -> {
-            this.plugin.getLogger().log(Level.SEVERE, "Error handling player join.", ex);
-            return null;
-        });
+        this.plugin.getPlayerRepository().getByPlayer(player)
+                .thenAcceptAsync(e -> e.onJoin(player), this.plugin.getExecutor())
+                .exceptionallyAsync(ex -> {
+                    this.plugin.getLogger().log(Level.SEVERE, "Error handling player join.", ex);
+                    return null;
+                }, this.plugin.getExecutor());
 
         if (player.isOp() && this.plugin.getUpdateChecker().isOutdated()) {
             Bukkit.getScheduler().runTaskLaterAsynchronously(this.plugin, () -> player.sendMessage(String.format("§eA new version (§f%s§e) of §f%s§e is available on Spigot.org. Your current version is §f%s§e.", this.plugin.getUpdateChecker().getNewestVersion(), this.plugin.getDescription().getName(), this.plugin.getDescription().getVersion())), 5L);

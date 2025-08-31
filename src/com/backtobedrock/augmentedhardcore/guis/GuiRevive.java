@@ -19,14 +19,16 @@ public class GuiRevive extends AbstractConfirmationGui {
         super(String.format("Reviving %s", reviving.getName()));
         this.reviverData = reviverData;
         this.reviving = reviving;
-        this.plugin.getPlayerRepository().getByPlayer(this.reviving).thenAcceptAsync(playerData -> {
-            this.revivingData = playerData;
-            this.updateInfo(true);
-            this.updateConfirmation(true);
-        }).exceptionally(ex -> {
-            this.plugin.getLogger().log(Level.SEVERE, "Error loading revive GUI.", ex);
-            return null;
-        });
+        this.plugin.getPlayerRepository().getByPlayer(this.reviving)
+                .thenAcceptAsync(playerData -> {
+                    this.revivingData = playerData;
+                    this.updateInfo(true);
+                    this.updateConfirmation(true);
+                }, this.plugin.getExecutor())
+                .exceptionallyAsync(ex -> {
+                    this.plugin.getLogger().log(Level.SEVERE, "Error loading revive GUI.", ex);
+                    return null;
+                }, this.plugin.getExecutor());
         this.initialize();
     }
 
