@@ -35,6 +35,7 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -101,7 +102,7 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
         if (this.getServerRepository() != null) {
             ServerData serverData = this.getServerRepository().getServerDataSync();
             if (serverData != null) {
-                this.getServerRepository().updateServerData(serverData);
+                this.getServerRepository().updateServerData(serverData).join();
             }
         }
 
@@ -111,6 +112,13 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
 
         if (this.executor != null) {
             this.executor.shutdown();
+            try {
+                if (!this.executor.awaitTermination(10, TimeUnit.SECONDS)) {
+                    this.getLogger().log(Level.WARNING, "Executor did not terminate in the allotted time.");
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
 
         if (this.getConfigurations() != null && this.getConfigurations().getDataConfiguration().getDatabase() != null) {

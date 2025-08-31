@@ -47,12 +47,15 @@ public class YAMLServerMapper implements IServerMapper {
     }
 
     @Override
-    public void updateServerData(ServerData data) {
+    public CompletableFuture<Void> updateServerData(ServerData data) {
         if (this.plugin.isStopping()) {
             this.insertServerDataSync(data);
-        } else {
-            this.insertServerDataAsync(data);
+            return CompletableFuture.completedFuture(null);
         }
+        return CompletableFuture.runAsync(() -> this.insertServerData(data), this.plugin.getExecutor()).exceptionally(ex -> {
+            this.plugin.getLogger().log(Level.SEVERE, "Could not insert server data.", ex);
+            return null;
+        });
     }
 
     @Override
