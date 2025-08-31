@@ -18,18 +18,30 @@ public class MessageUtils {
     public static final DateTimeFormatter MEDIUM_FORMATTER = DateTimeFormatter.ofPattern("MMM dd yyyy',' HH:mm z").withZone(ZoneId.systemDefault());
     public static final DateTimeFormatter LONG_FORMATTER = DateTimeFormatter.ofPattern("EEEE MMM dd yyyy 'at' HH:mm:ss z").withZone(ZoneId.systemDefault());
 
+    // Time constants
+    public static final long TICKS_PER_SECOND = 20L;
+    public static final long SECONDS_PER_MINUTE = 60L;
+    public static final long MINUTES_PER_HOUR = 60L;
+    public static final long HOURS_PER_DAY = 24L;
+    public static final long TICKS_PER_MINUTE = TICKS_PER_SECOND * SECONDS_PER_MINUTE;
+    public static final long TICKS_PER_HOUR = TICKS_PER_MINUTE * MINUTES_PER_HOUR;
+    public static final long TICKS_PER_DAY = TICKS_PER_HOUR * HOURS_PER_DAY;
+
     public static long timeUnitToTicks(long time, TimeUnit unit) {
-        return unit.toSeconds(time) * 20;
+        return unit.toSeconds(time) * TICKS_PER_SECOND;
     }
 
     public static long timeBetweenDatesToTicks(LocalDateTime date1, LocalDateTime date2) {
-        return Math.abs(ChronoUnit.SECONDS.between(date1, date2)) * 20;
+        return Math.abs(ChronoUnit.SECONDS.between(date1, date2)) * TICKS_PER_SECOND;
     }
 
     public static String getTimeFromTicks(long amount, TimePattern pattern) {
         StringBuilder sb = new StringBuilder();
 
-        long d = amount / 1728000, h = amount % 1728000 / 72000, m = amount % 72000 / 1200, s = amount % 1200 / 20;
+        long d = amount / TICKS_PER_DAY;
+        long h = amount % TICKS_PER_DAY / TICKS_PER_HOUR;
+        long m = amount % TICKS_PER_HOUR / TICKS_PER_MINUTE;
+        long s = amount % TICKS_PER_MINUTE / TICKS_PER_SECOND;
 
         switch (pattern) {
             case LONG:
