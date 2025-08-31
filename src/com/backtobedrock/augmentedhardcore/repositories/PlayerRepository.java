@@ -41,7 +41,7 @@ public class PlayerRepository {
 
     private void initializeMapper() {
         if (this.plugin.getConfigurations().getDataConfiguration().getStorageType() == StorageType.MYSQL) {
-            this.mapper = MySQLPlayerMapper.getInstance(this.plugin);
+            this.mapper = new MySQLPlayerMapper(this.plugin);
         } else {
             this.mapper = new YAMLPlayerMapper(this.plugin);
         }

@@ -17,17 +17,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
-    private static MySQLPlayerMapper instance;
+    private final MySQLBanMapper banMapper;
 
-    public static synchronized MySQLPlayerMapper getInstance(AugmentedHardcore plugin) {
-        if (instance == null) {
-            instance = new MySQLPlayerMapper(plugin);
-        }
-        return instance;
-    }
-
-    private MySQLPlayerMapper(AugmentedHardcore plugin) {
+    public MySQLPlayerMapper(AugmentedHardcore plugin) {
         super(plugin);
+        this.banMapper = new MySQLBanMapper(plugin);
     }
 
     @Override
@@ -75,7 +69,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
                             deathBans
                     );
                 }
-                Pair<Integer, Ban> banPair = MySQLBanMapper.getInstance(this.plugin).getBanFromResultSetSync(resultSet);
+                Pair<Integer, Ban> banPair = this.banMapper.getBanFromResultSetSync(resultSet);
                 if (banPair != null) {
                     deathBans.put(banPair.getValue0(), banPair.getValue1());
                 }

@@ -33,6 +33,10 @@ public class ServerRepository {
         });
     }
 
+    public void onReload() {
+        this.initializeMapper();
+    }
+
     private void initializeMapper() {
         this.mapper = new YAMLServerMapper(this.plugin);
         if (this.plugin.getConfigurations().getDataConfiguration().getStorageType() == StorageType.MYSQL) {

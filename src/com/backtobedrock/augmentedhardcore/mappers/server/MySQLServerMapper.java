@@ -24,6 +24,7 @@ import java.util.logging.Level;
 public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
 
     private static MySQLServerMapper instance;
+    private final MySQLBanMapper banMapper;
 
     public static synchronized MySQLServerMapper getInstance(AugmentedHardcore plugin) {
         if (instance == null) {
@@ -34,6 +35,7 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
 
     private MySQLServerMapper(AugmentedHardcore plugin) {
         super(plugin);
+        this.banMapper = new MySQLBanMapper(plugin);
     }
 
     @Override
@@ -67,7 +69,7 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
                     totalDeathBans = resultSet.getInt("total_death_bans");
                     String uuidString = resultSet.getString("player_uuid");
                     if (uuidString != null && !uuidString.isEmpty()) {
-                        Pair<Integer, Ban> banPair = MySQLBanMapper.getInstance(this.plugin).getBanFromResultSetSync(resultSet);
+                        Pair<Integer, Ban> banPair = this.banMapper.getBanFromResultSetSync(resultSet);
                         if (banPair != null) {
                             deathBans.put(UUID.fromString(uuidString), banPair);
                         }
@@ -98,7 +100,7 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
                 this.plugin.getLogger().log(Level.SEVERE, "Could not update server data.", e);
                 return;
             }
-            data.getOngoingBans().forEach((key, value) -> MySQLBanMapper.getInstance(this.plugin).updateBan(this.plugin.getServer(), key, value.getBan()));
+            data.getOngoingBans().forEach((key, value) -> this.banMapper.updateBan(this.plugin.getServer(), key, value.getBan()));
         }, this.plugin.getExecutor()).exceptionally(ex -> {
             this.plugin.getLogger().log(Level.SEVERE, "Could not update server data asynchronously.", ex);
             return null;
@@ -126,6 +128,6 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
 
     @Override
     public void deleteBanFromServerData(UUID uuid, Pair<Integer, Ban> ban) {
-        MySQLBanMapper.getInstance(this.plugin).updateBan(null, uuid, ban);
+        this.banMapper.updateBan(null, uuid, ban);
     }
 }
