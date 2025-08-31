@@ -34,6 +34,8 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -58,6 +60,18 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
 
     //async executor
     private ExecutorService executor;
+    private final ThreadFactory asyncThreadFactory = new ThreadFactory() {
+        private final AtomicInteger count = new AtomicInteger(1);
+        private final ThreadFactory backingFactory = Executors.defaultThreadFactory();
+
+        @Override
+        public Thread newThread(@NotNull Runnable r) {
+            Thread thread = backingFactory.newThread(r);
+            thread.setName(String.format("AugHC-Async-%d", count.getAndIncrement()));
+            thread.setDaemon(true);
+            return thread;
+        }
+    };
 
     @Override
     public void onEnable() {
@@ -113,7 +127,7 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
 
     public void initialize() {
         if (this.executor == null || this.executor.isShutdown()) {
-            this.executor = Executors.newFixedThreadPool(Math.max(2, Runtime.getRuntime().availableProcessors()));
+            this.executor = Executors.newFixedThreadPool(Math.max(2, Runtime.getRuntime().availableProcessors()), this.asyncThreadFactory);
         }
 
         //initialize old config directory
