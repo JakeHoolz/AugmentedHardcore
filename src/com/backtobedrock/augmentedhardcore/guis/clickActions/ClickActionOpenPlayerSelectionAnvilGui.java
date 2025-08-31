@@ -1,5 +1,6 @@
 package com.backtobedrock.augmentedhardcore.guis.clickActions;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.commands.CommandRevive;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.entity.Player;
@@ -7,6 +8,10 @@ import org.bukkit.entity.Player;
 import java.util.Collections;
 
 public class ClickActionOpenPlayerSelectionAnvilGui extends AbstractClickAction {
+    public ClickActionOpenPlayerSelectionAnvilGui(AugmentedHardcore plugin) {
+        super(plugin);
+    }
+
     @Override
     public void execute(Player player) {
         new AnvilGUI.Builder()

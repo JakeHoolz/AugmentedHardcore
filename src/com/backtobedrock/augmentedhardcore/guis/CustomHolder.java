@@ -1,20 +1,16 @@
 package com.backtobedrock.augmentedhardcore.guis;
 
-import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class CustomHolder implements InventoryHolder {
-    private final AugmentedHardcore plugin;
-
     private final String title;
     private final int size;
     private final int rowAmount;
@@ -23,7 +19,6 @@ public class CustomHolder implements InventoryHolder {
     private Inventory inventory = null;
 
     public CustomHolder(int size, String title) {
-        this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
         size = Math.max(1, size);
         this.title = title;
         this.size = Math.min((int) (Math.ceil((double) size / 7) * 9) + 18, 54);

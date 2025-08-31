@@ -1,5 +1,6 @@
 package com.backtobedrock.augmentedhardcore.guis;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
 import com.backtobedrock.augmentedhardcore.domain.enums.TimePattern;
@@ -20,8 +21,8 @@ public class GuiMyStats extends AbstractGui {
     private final Player sender;
     private final boolean isOther;
 
-    public GuiMyStats(Player sender, PlayerData playerData) {
-        super(new CustomHolder(54, String.format("%s Information", playerData.getPlayer().getName())));
+    public GuiMyStats(AugmentedHardcore plugin, Player sender, PlayerData playerData) {
+        super(plugin, new CustomHolder(54, String.format("%s Information", playerData.getPlayer().getName())));
         this.playerData = playerData;
         this.sender = sender;
         this.isOther = !sender.getUniqueId().toString().equals(this.playerData.getPlayer().getUniqueId().toString());
@@ -97,7 +98,7 @@ public class GuiMyStats extends AbstractGui {
             );
             icon = new Icon(MessageUtils.replaceItemNameAndLorePlaceholders(this.plugin.getConfigurations().getGuisConfiguration().getReviveOnCooldownDisplay().getItem(), placeholders), Collections.emptyList());
         } else {
-            icon = new Icon(this.plugin.getConfigurations().getGuisConfiguration().getReviveDisplay().getItem(), Collections.singletonList(new ClickActionOpenPlayerSelectionAnvilGui()));
+            icon = new Icon(this.plugin.getConfigurations().getGuisConfiguration().getReviveDisplay().getItem(), Collections.singletonList(new ClickActionOpenPlayerSelectionAnvilGui(this.plugin)));
         }
 
         this.setIcon(22, icon, update);
@@ -132,7 +133,7 @@ public class GuiMyStats extends AbstractGui {
             Map<String, String> placeholders = Map.of(
                     "total_death_bans", Integer.toString(playerData.getBanCount())
             );
-            icon = new Icon(MessageUtils.replaceItemNameAndLorePlaceholders(this.plugin.getConfigurations().getGuisConfiguration().getPreviousBansDisplay().getItem(), placeholders), Collections.singletonList(new ClickActionOpenBansGui(this.playerData)));
+            icon = new Icon(MessageUtils.replaceItemNameAndLorePlaceholders(this.plugin.getConfigurations().getGuisConfiguration().getPreviousBansDisplay().getItem(), placeholders), Collections.singletonList(new ClickActionOpenBansGui(this.plugin, this.playerData)));
         }
 
         this.setIcon(31, icon, update);
