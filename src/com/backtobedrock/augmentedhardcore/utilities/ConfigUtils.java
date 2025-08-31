@@ -205,6 +205,6 @@ public class ConfigUtils {
 
     private static void sendWarningMessage(String message) {
         AugmentedHardcore plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
-        plugin.getLogger().log(Level.INFO, message);
+        plugin.getLogger().log(Level.WARNING, message);
     }
 }
