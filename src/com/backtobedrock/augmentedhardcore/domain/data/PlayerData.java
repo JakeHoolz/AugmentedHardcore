@@ -817,7 +817,7 @@ public class PlayerData {
         this.setTimeTillNextRevive(this.plugin.getConfigurations().getReviveConfiguration().isReviveOnFirstJoin() ? 0L : this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives());
         this.setTimeTillNextLifePart(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart());
         this.setTimeTillNextMaxHealth(this.plugin.getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart());
-        this.banManager.getBans().clear();
+        this.banManager.clearBans();
         this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> serverData.getBan(this.player.getUniqueId()).finish());
         this.plugin.getPlayerRepository().deletePlayerData(this.player);
         this.plugin.getPlayerRepository().updatePlayerData(this);
